@@ -2,9 +2,11 @@ package com.spring.azure.demo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opencsv.bean.CsvBindByPosition;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class POHeaderResponse {
 
     @CsvBindByPosition(position = 1)
