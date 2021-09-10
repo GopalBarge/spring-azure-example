@@ -1,8 +1,7 @@
 package com.sal.prompt.web.service;
 
-import com.sal.prompt.web.model.Lookup;
-import com.sal.prompt.web.model.LookupResponse;
-import com.sal.prompt.web.model.POLookupEnum;
+import com.sal.prompt.web.client.soap.SoapClient;
+import com.sal.prompt.web.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.xml.bind.JAXBException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,6 +25,20 @@ public class ReferenceDataService {
     private String lookupHost;
     private final RestTemplate restTemplate;
 
+    private final SoapClient soapClient;
+
+    public void getSupplierDetails(){
+        try {
+//            SupplierResponse invoice = soapClient.getSupplierDetails("INVOICE");
+//            List<Supplier> invoiceSupplier = invoice.getSuppliers();
+            SupplierResponse po = soapClient.getSupplierDetails("PO");
+            List<Supplier> poSupplier = po.getSuppliers();
+            SupplierResponse receipt = soapClient.getSupplierDetails("RECEIPT");
+            List<Supplier> receiptSupplier = po.getSuppliers();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
     public List<Lookup> getLookup() {
         log.info("getting lookup data from rest end point");
         ResponseEntity<LookupResponse> response = restTemplate.getForEntity(lookupHost, LookupResponse.class);

@@ -1,7 +1,7 @@
 package com.sal.prompt.web.controller;
 
-import com.sal.prompt.web.dto.AS400Request;
 import com.sal.prompt.web.client.soap.SoapClient;
+import com.sal.prompt.web.dto.AS400Request;
 import com.sal.prompt.web.handler.SourceDataProcessor;
 import com.sal.prompt.web.handler.SupplyChainProcessor;
 import lombok.RequiredArgsConstructor;
@@ -16,22 +16,20 @@ import java.util.List;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AS400Controller {
-    @Autowired
-    SoapClient soapClient;
+
     private final List<SourceDataProcessor> processors;
 
     @GetMapping
-    public String sayHello(){
-         soapClient.getSupplierDetails();
-         return "Welcome to azure web api";
+    public String sayHello() {
+        return "Welcome to azure web api";
     }
 
     @PostMapping("/process/supply-chain")
-    public ResponseEntity processSupplyChain(@RequestBody List<AS400Request> requestList){
+    public ResponseEntity processSupplyChain(@RequestBody List<AS400Request> requestList) {
         boolean processed = processors.stream().filter(p -> p instanceof SupplyChainProcessor).findAny().get().process(requestList);
-       if(!processed){
-           return new ResponseEntity(HttpStatus.BAD_REQUEST);
-       }
+        if (!processed) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity(HttpStatus.OK);
     }
 
