@@ -1,0 +1,11 @@
+client:
+  soap:
+    default-uri: https://edco-test.fa.us2.oraclecloud.com/xmlpserver/services/ExternalReportWSSService
+    user:
+      name: SAL_AZR_ERP_INT
+      password: Welcome1
+  rest:
+    default-uri: https://edco-test.fa.us2.oraclecloud.com/fscmRestApi/resources/11.13.18.05/commonLookupsLOV?q=LookupType=PROMPT_TEST
+    user:
+      name: SAL_AZR_ERP_INT
+      password: Welcome1

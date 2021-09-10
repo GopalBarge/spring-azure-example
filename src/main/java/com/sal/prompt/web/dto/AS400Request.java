@@ -1,4 +1,4 @@
-package com.spring.azure.demo.dto;
+package com.sal.prompt.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -10,9 +10,7 @@ public class AS400Request {
     @NotEmpty
     @JsonProperty("PO_Header")
     private POHeader pOHeader;
-    @NotEmpty
-    @JsonProperty("PO_LINES")
-    private PoLines poLines;
+
 
 
 

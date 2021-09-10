@@ -1,10 +1,9 @@
-package com.spring.azure.demo.dto;
+package com.sal.prompt.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.spring.azure.demo.utils.Constants;
+import com.sal.prompt.web.utils.Constants;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
