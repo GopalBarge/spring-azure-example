@@ -14,7 +14,7 @@
     <name>spring-azure</name>
     <description>Demo project for Spring Boot with azure</description>
     <properties>
-        <java.version>12</java.version>
+        <java.version>11</java.version>
         <httpclient.version>4.5.4</httpclient.version>
         <maven-jaxb2-plugin.version>0.13.3</maven-jaxb2-plugin.version>
     </properties>
@@ -108,7 +108,7 @@
         </dependency>
     </dependencies>
 
-    <!--<repositories>
+    <repositories>
         <repository>
             <id>SaveALot</id>
             <url>https://pkgs.dev.azure.com/SAL-IT-DevOps/_packaging/SaveALot/maven/v1</url>
@@ -125,7 +125,7 @@
             <id>SaveALot</id>
             <url>https://pkgs.dev.azure.com/SAL-IT-DevOps/_packaging/SaveALot/maven/v1</url>
         </repository>
-    </distributionManagement>-->
+    </distributionManagement>
 
     <pluginRepositories>
         <pluginRepository>
