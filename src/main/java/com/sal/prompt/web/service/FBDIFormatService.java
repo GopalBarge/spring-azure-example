@@ -5,10 +5,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import com.sal.prompt.web.dto.response.PODistribution;
+import com.sal.prompt.web.dto.response.PODistributionResponse;
 import com.sal.prompt.web.dto.response.POHeaderResponse;
-import com.sal.prompt.web.dto.response.POLine;
-import com.sal.prompt.web.dto.response.POLineLocation;
+import com.sal.prompt.web.dto.response.POLineResponse;
+import com.sal.prompt.web.dto.response.POLineLocationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +33,14 @@ public class FBDIFormatService {
         String PO_LINE_LOCATION_FILE_NAME = "./po-line_locations_" + millis + ".csv";
         String PO_DISTRIBUTION_FILE_NAME = "./po-distribution_" + millis + ".csv";
 
-        List<POLine> poLines = transformedData.stream().flatMap(e -> e.getPoLines().stream()).sorted(Comparator.comparing(POLine::getInterfaceHeaderKey)).collect(Collectors.toList());
-        List<POLineLocation> poLineLocations = poLines.stream().flatMap(e -> e.getPoLineLocations().stream()).sorted(Comparator.comparing(POLineLocation::getInterfaceLineKey)).collect(Collectors.toList());
-        List<PODistribution> poDistributions = poLineLocations.stream().flatMap(e -> e.getPoDistributions().stream()).sorted(Comparator.comparing(PODistribution::getInterfaceLineLocationKey)).collect(Collectors.toList());
+        List<POLineResponse> poLineResponses = transformedData.stream().flatMap(e -> e.getPoLineResponses().stream()).sorted(Comparator.comparing(POLineResponse::getInterfaceHeaderKey)).collect(Collectors.toList());
+        List<POLineLocationResponse> poLineLocationResponses = poLineResponses.stream().flatMap(e -> e.getPoLineLocationResponses().stream()).sorted(Comparator.comparing(POLineLocationResponse::getInterfaceLineKey)).collect(Collectors.toList());
+        List<PODistributionResponse> poDistributionResponses = poLineLocationResponses.stream().flatMap(e -> e.getPoDistributionResponses().stream()).sorted(Comparator.comparing(PODistributionResponse::getInterfaceLineLocationKey)).collect(Collectors.toList());
 
         writeFile(transformedData, PO_HEADER_FILE_NAME);
-        writeFile(poLines, PO_LINE_FILE_NAME);
-        writeFile(poLineLocations, PO_LINE_LOCATION_FILE_NAME);
-        writeFile(poDistributions, PO_DISTRIBUTION_FILE_NAME);
+        writeFile(poLineResponses, PO_LINE_FILE_NAME);
+        writeFile(poLineLocationResponses, PO_LINE_LOCATION_FILE_NAME);
+        writeFile(poDistributionResponses, PO_DISTRIBUTION_FILE_NAME);
 
         return Arrays.asList(PO_HEADER_FILE_NAME, PO_LINE_FILE_NAME, PO_LINE_LOCATION_FILE_NAME, PO_DISTRIBUTION_FILE_NAME);
     }

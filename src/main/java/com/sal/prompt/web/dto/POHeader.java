@@ -78,7 +78,6 @@ public class POHeader {
     @NotEmpty
     @JsonProperty("OPERATION_FLAG")
     private String operationFlag;
-
     @NotEmpty
     @JsonProperty("PO_LINES")
     private List<PoLines> poLines;

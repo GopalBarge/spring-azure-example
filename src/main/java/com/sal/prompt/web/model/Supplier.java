@@ -1,17 +1,21 @@
 package com.sal.prompt.web.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
-@Data
+@Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Supplier {
-    @XmlAttribute(name = "SUPPLIER_NAME")
+    @JsonProperty("SUPPLIER_NAME")
     public String supplierName;
-    @XmlAttribute(name = "SUPPLIER_NUMBER")
+    @JsonProperty("SUPPLIER_NUMBER")
     public String supplierNumber;
-    @XmlAttribute(name = "SUPPLIER_SITE_CODE")
+    @JsonProperty("SUPPLIER_SITE_CODE")
     public String supplierSiteCode;
-    @XmlAttribute(name = "VENDOR_SITE_CODE_ALT")
+    @JsonProperty("VENDOR_SITE_CODE_ALT")
     public String vendorSiteCodeAlt;
 }
 

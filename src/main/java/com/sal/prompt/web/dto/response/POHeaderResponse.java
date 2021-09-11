@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class POHeaderResponse {
-    List<POLine> poLines;
+    List<POLineResponse> poLineResponses;
 
 
     @CsvBindByPosition(position = 0)

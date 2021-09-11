@@ -7,8 +7,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class POLineLocation {
-    List<PODistribution> poDistributions;
+public class POLineLocationResponse {
+    List<PODistributionResponse> poDistributionResponses;
 
 
     @CsvBindByPosition(position = 0)

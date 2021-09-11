@@ -5,7 +5,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
 
 @Data
-public class PODistribution {
+public class PODistributionResponse {
 
 
     @CsvBindByPosition(position = 0)
