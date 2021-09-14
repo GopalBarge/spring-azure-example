@@ -72,69 +72,61 @@ public class SupplyChainProcessor extends SourceDataProcessor {
             SupplyChainRequest input = (SupplyChainRequest) request;
             transformPoHeader(input.getPOHeader(), poHeaderResponse);
             transformPoLine(input.getPOHeader(), poHeaderResponse);
-            transformPoLineLocation(input.getPOHeader(), poHeaderResponse);
-            transformPoDistribution(input.getPOHeader(), poHeaderResponse);
+//            transformPoLineLocation(input.getPOHeader(), poHeaderResponse);
+//            transformPoDistribution(input.getPOHeader(), poHeaderResponse);
         }
         return poHeaderResponse;
     }
 
-    private void transformPoDistribution(POHeader poHeader, POHeaderResponse poHeaderResponse) {
-        for (POLineResponse poLineResponse : poHeaderResponse.getPoLineResponses()) {
-            for (POLineLocationResponse poLineLocationResponse : poLineResponse.getPoLineLocationResponses()) {
-                List<PODistributionResponse> poDistributionResponses = new ArrayList<>();
+    private void transformPoDistribution(PoLines poHeader, POLineLocationResponse poLineLocationResponse) {
 
-                PODistributionResponse poDistributionResponse1 = new PODistributionResponse();
-                PODistributionResponse poDistributionResponse2 = new PODistributionResponse();
+        List<PODistributionResponse> poDistributionResponses = new ArrayList<>();
 
-                poDistributionResponse1.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
-                poDistributionResponse1.setInterfaceDistributionKey(getRandomNumber());
-                poDistributionResponse1.setDistribution(poLineLocationResponse.getInterfaceLineLocationKey());
-                poDistributionResponse1.setRequester(referenceDataService.getPOLookupByCode(POLookupEnum.Requester));
+        PODistributionResponse poDistributionResponse1 = new PODistributionResponse();
+        PODistributionResponse poDistributionResponse2 = new PODistributionResponse();
+
+        poDistributionResponse1.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
+        poDistributionResponse1.setInterfaceDistributionKey(getRandomNumber());
+//                poDistributionResponse1.setDistribution(poLineLocationResponse.getInterfaceLineLocationKey());
+        poDistributionResponse1.setRequester(referenceDataService.getPOLookupByCode(POLookupEnum.Requester));
 //                poDistribution1.setQuantity();
-                poDistributionResponse1.setChargeAccountSegment1(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment1));
-                poDistributionResponse1.setChargeAccountSegment2(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment2));
-                poDistributionResponse1.setChargeAccountSegment3(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment3));
-                poDistributionResponse1.setChargeAccountSegment4(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment4));
-                poDistributionResponse1.setChargeAccountSegment5(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment5));
-                poDistributionResponse1.setChargeAccountSegment6(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment6));
-                poDistributionResponse1.setChargeAccountSegment7(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment7));
+        poDistributionResponse1.setChargeAccountSegment1(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment1));
+        poDistributionResponse1.setChargeAccountSegment2(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment2));
+        poDistributionResponse1.setChargeAccountSegment3(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment3));
+        poDistributionResponse1.setChargeAccountSegment4(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment4));
+        poDistributionResponse1.setChargeAccountSegment5(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment5));
+        poDistributionResponse1.setChargeAccountSegment6(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment6));
+        poDistributionResponse1.setChargeAccountSegment7(referenceDataService.getPOLookupByCode(POLookupEnum.ChargeAccountSegment7));
 
 
-                poDistributionResponse2.setInterfaceDistributionKey(getRandomNumber());
-                poDistributionResponse2.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
-                poDistributionResponses.add(poDistributionResponse1);
-                poDistributionResponses.add(poDistributionResponse2);
-                poLineLocationResponse.setPoDistributionResponses(poDistributionResponses);
-            }
-        }
+        poDistributionResponse2.setInterfaceDistributionKey(getRandomNumber());
+        poDistributionResponse2.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
+        poDistributionResponses.add(poDistributionResponse1);
+        poDistributionResponses.add(poDistributionResponse2);
+        poLineLocationResponse.setPoDistributionResponses(poDistributionResponses);
+
+
     }
 
-    private void transformPoLineLocation(POHeader poHeader, POHeaderResponse poHeaderResponse) {
+    private void transformPoLineLocation(PoLines poLine, POLineResponse poLineResponse) {
 
-
-        for (POLineResponse poLineResponse : poHeaderResponse.getPoLineResponses()) {
-            List<POLineLocationResponse> lineLocations = new ArrayList<>();
-            POLineLocationResponse poLineLocationResponse1 = new POLineLocationResponse();
-            poLineLocationResponse1.setInterfaceLineKey(poLineResponse.getInterfaceLineKey());
-            poLineLocationResponse1.setInterfaceLineLocationKey(getRandomNumber());
-            poLineLocationResponse1.setSchedule(poLineResponse.getInterfaceLineKey());
-            poLineLocationResponse1.setShipToLocation(referenceDataService.getPOLookupByCode(POLookupEnum.ShipToLocation));
-            poLineLocationResponse1.setShipToOrganization(referenceDataService.getPOLookupByCode(POLookupEnum.ShipToOrganization));
+        List<POLineLocationResponse> lineLocations = new ArrayList<>();
+        POLineLocationResponse poLineLocationResponse1 = new POLineLocationResponse();
+        poLineLocationResponse1.setInterfaceLineKey(poLineResponse.getInterfaceLineKey());
+        poLineLocationResponse1.setInterfaceLineLocationKey(getRandomNumber());
+//            poLineLocationResponse1.setSchedule(poLineResponse.getInterfaceLineKey());
+        poLineLocationResponse1.setShipToLocation(referenceDataService.getPOLookupByCode(POLookupEnum.ShipToLocation));
+        poLineLocationResponse1.setShipToOrganization(referenceDataService.getPOLookupByCode(POLookupEnum.ShipToOrganization));
 //            poLineLocation1.setQuantity();
 //            poLineLocation1.setNeedByDate();
-            poLineLocationResponse1.setDestinationTypeCode(referenceDataService.getPOLookupByCode(POLookupEnum.DestinationTypeCode));
-            poLineLocationResponse1.setAccrueAtReceipt(referenceDataService.getPOLookupByCode(POLookupEnum.AccrueAtReceipt));
+        poLineLocationResponse1.setDestinationTypeCode(referenceDataService.getPOLookupByCode(POLookupEnum.DestinationTypeCode));
+        poLineLocationResponse1.setAccrueAtReceipt(referenceDataService.getPOLookupByCode(POLookupEnum.AccrueAtReceipt));
 //            poLineLocation1.setRequestedDeliveryDate();
 
+        lineLocations.add(poLineLocationResponse1);
+        poLineResponse.setPoLineLocationResponses(lineLocations);
 
-            POLineLocationResponse poLineLocationResponse2 = new POLineLocationResponse();
-            poLineLocationResponse2.setInterfaceLineKey(poLineResponse.getInterfaceLineKey());
-            poLineLocationResponse2.setInterfaceLineLocationKey(getRandomNumber());
-
-            lineLocations.add(poLineLocationResponse1);
-            lineLocations.add(poLineLocationResponse2);
-            poLineResponse.setPoLineLocationResponses(lineLocations);
-        }
+        transformPoDistribution(poLine, poLineLocationResponse1);
     }
 
     private void transformPoLine(POHeader poHeader, POHeaderResponse poHeaderResponse) {
@@ -171,6 +163,7 @@ public class SupplyChainProcessor extends SourceDataProcessor {
             poLineResponse.setAttribute12(poLine.getAmtBackhaul());
             poLineResponse.setAttribute13(String.valueOf(poLine.getLastCost()));
             poLineResponses.add(poLineResponse);
+            transformPoLineLocation(poLine, poLineResponse);
         }
         poHeaderResponse.setPoLineResponses(poLineResponses);
 
