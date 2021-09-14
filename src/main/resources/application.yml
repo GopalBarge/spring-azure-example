@@ -1,3 +1,12 @@
+#azure:
+#  keyvault:
+#    client-id: xxxxxxx
+#    client-key: xxxxxxyyyyy
+#    enabled: true
+#    uri: https://xxx.vault.azure.net/
+
+
+
 client:
   soap:
     default-uri: https://edco-test.fa.us2.oraclecloud.com/xmlpserver/services/ExternalReportWSSService
@@ -9,3 +18,9 @@ client:
     user:
       name: SAL_AZR_ERP_INT
       password: Welcome1
+
+azure:
+  storage:
+    ConnectionString: DefaultEndpointsProtocol=https;AccountName=gopalbarge;AccountKey=k0Zdx1U890pP/cIz06t/lagklLbLnnLLCbEvmH/zM67pHJH8eivEePR9FjuFS0He3Pyw0eK1E8z4qbAlGJieow==;EndpointSuffix=core.windows.net
+    container:
+      name: gopalbarge

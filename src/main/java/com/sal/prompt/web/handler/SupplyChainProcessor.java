@@ -1,12 +1,10 @@
 package com.sal.prompt.web.handler;
 
-import com.sal.prompt.web.dto.AS400Request;
+import com.sal.prompt.web.dto.SourceSystemRequest;
+import com.sal.prompt.web.dto.SupplyChainRequest;
 import com.sal.prompt.web.dto.POHeader;
 import com.sal.prompt.web.dto.PoLines;
-import com.sal.prompt.web.dto.response.PODistributionResponse;
-import com.sal.prompt.web.dto.response.POHeaderResponse;
-import com.sal.prompt.web.dto.response.POLineResponse;
-import com.sal.prompt.web.dto.response.POLineLocationResponse;
+import com.sal.prompt.web.dto.response.*;
 import com.sal.prompt.web.model.POLookupEnum;
 import com.sal.prompt.web.model.Supplier;
 import com.sal.prompt.web.service.FBDIFormatService;
@@ -14,16 +12,18 @@ import com.sal.prompt.web.service.ReferenceDataService;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class SupplyChainProcessor extends SourceDataProcessor {
 
     private final ReferenceDataService referenceDataService;
     private final FBDIFormatService fbdiFormatService;
+    String PO_HEADER_FILE_NAME = "PO_HEADERS_INTERFACE.csv";
+    String PO_LINE_FILE_NAME = "PO_LINES_INTERFACE.csv";
+    String PO_LINE_LOCATION_FILE_NAME = "PO_LINE_LOCATIONS_INTERFACE.csv";
+    String PO_DISTRIBUTION_FILE_NAME = "PO_DISTRIBUTIONS_INTERFACE.csv";
 
     public SupplyChainProcessor(FBDIFormatService fbdiFormatService, ReferenceDataService referenceDataService) {
         super(fbdiFormatService);
@@ -31,17 +31,50 @@ public class SupplyChainProcessor extends SourceDataProcessor {
         this.referenceDataService = referenceDataService;
     }
 
-    private String getRandomNumber() {
-        return String.valueOf(new Random().nextInt(1000000));
+    @Override
+    String getSourceSystem() {
+        return "AS400";
     }
 
     @Override
-    POHeaderResponse transform(AS400Request input) {
+    String getTargetSystem() {
+        return "Oracle";
+    }
+
+    @Override
+    String getBatchId() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+
+    private String getRandomNumber() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+
+    @Override
+    protected Map<String, List> getFileDataMap(List<TargetSystemResponse> data) {
+        Map<String, List> fileDateMap = new HashMap<>(4);
+        List<POHeaderResponse> transformedData = data.stream().map(d -> (POHeaderResponse) d).collect(Collectors.toList());
+        List<POLineResponse> poLineResponses = transformedData.stream().flatMap(e -> e.getPoLineResponses().stream()).sorted(Comparator.comparing(POLineResponse::getInterfaceHeaderKey)).collect(Collectors.toList());
+        List<POLineLocationResponse> poLineLocationResponses = poLineResponses.stream().flatMap(e -> e.getPoLineLocationResponses().stream()).sorted(Comparator.comparing(POLineLocationResponse::getInterfaceLineKey)).collect(Collectors.toList());
+        List<PODistributionResponse> poDistributionResponses = poLineLocationResponses.stream().flatMap(e -> e.getPoDistributionResponses().stream()).sorted(Comparator.comparing(PODistributionResponse::getInterfaceLineLocationKey)).collect(Collectors.toList());
+
+        fileDateMap.put(PO_HEADER_FILE_NAME, transformedData);
+        fileDateMap.put(PO_LINE_FILE_NAME, poLineResponses);
+        fileDateMap.put(PO_LINE_LOCATION_FILE_NAME, poLineLocationResponses);
+        fileDateMap.put(PO_DISTRIBUTION_FILE_NAME, poDistributionResponses);
+        return fileDateMap;
+    }
+
+    @Override
+    public TargetSystemResponse transform(SourceSystemRequest request) {
         POHeaderResponse poHeaderResponse = new POHeaderResponse();
-        transformPoHeader(input.getPOHeader(), poHeaderResponse);
-        transformPoLine(input.getPOHeader(), poHeaderResponse);
-        transformPoLineLocation(input.getPOHeader(), poHeaderResponse);
-        transformPoDistribution(input.getPOHeader(), poHeaderResponse);
+        if (request instanceof SupplyChainRequest) {
+            SupplyChainRequest input = (SupplyChainRequest) request;
+            transformPoHeader(input.getPOHeader(), poHeaderResponse);
+            transformPoLine(input.getPOHeader(), poHeaderResponse);
+            transformPoLineLocation(input.getPOHeader(), poHeaderResponse);
+            transformPoDistribution(input.getPOHeader(), poHeaderResponse);
+        }
         return poHeaderResponse;
     }
 
@@ -157,7 +190,7 @@ public class SupplyChainProcessor extends SourceDataProcessor {
         poHeaderResponse.setCurrencyCode(referenceDataService.getPOLookupByCode(POLookupEnum.CurrencyCode));
         poHeaderResponse.setBillToLocation(referenceDataService.getPOLookupByCode(POLookupEnum.BillToLocation));
         Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(poHeader.getVendorNbr());
-        if(supplierOpt.isPresent()) {
+        if (supplierOpt.isPresent()) {
             Supplier supplier = supplierOpt.get();
             poHeaderResponse.setSupplier(supplier.getSupplierName());
             poHeaderResponse.setSupplierNumber(supplier.getSupplierNumber());

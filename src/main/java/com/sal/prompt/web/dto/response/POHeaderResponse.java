@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class POHeaderResponse {
+public class POHeaderResponse implements TargetSystemResponse{
     List<POLineResponse> poLineResponses;
 
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class AS400Request {
+public class SupplyChainRequest implements SourceSystemRequest{
     @NotEmpty
     @JsonProperty("PO_Header")
     private POHeader pOHeader;
