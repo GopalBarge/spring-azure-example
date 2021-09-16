@@ -1,7 +1,8 @@
-package com.sal.prompt.web.dto;
+package com.sal.prompt.web.dto.request.supplychain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sal.prompt.web.dto.request.SourceSystemRequest;
 import com.sal.prompt.web.utils.Constants;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class POHeader {
+public class SupplyChainPORequest implements SourceSystemRequest {
 
     @NotEmpty
     @JsonProperty("BUYER")
@@ -81,4 +82,8 @@ public class POHeader {
     @NotEmpty
     @JsonProperty("PO_LINES")
     private List<PoLines> poLines;
+
+
+
+
 }

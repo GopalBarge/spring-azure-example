@@ -1,4 +1,4 @@
-package com.sal.prompt.web.dto;
+package com.sal.prompt.web.dto.request.supplychain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

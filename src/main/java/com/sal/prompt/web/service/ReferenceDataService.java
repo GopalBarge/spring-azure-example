@@ -56,9 +56,9 @@ public class ReferenceDataService {
     }
 
     @Cacheable(cacheNames = "getPOLookupByCode")
-    public String getPOLookupByCode(POLookupEnum lookupCode) {
+    public String getPOLookupByCode(String lookupCode) {
         log.info("getting lookup data for lookupCode {}", lookupCode);
-        return getPOLookup().get(PO_LOOKUP_PREFIX.concat(lookupCode.name()));
+        return getPOLookup().get(PO_LOOKUP_PREFIX.concat(lookupCode));
     }
 
     @Cacheable(cacheNames = "getPOSupplierByCode")

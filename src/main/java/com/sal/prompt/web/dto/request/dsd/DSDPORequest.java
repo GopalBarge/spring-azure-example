@@ -1,7 +1,8 @@
-package com.sal.prompt.web.dto;
+package com.sal.prompt.web.dto.request.dsd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sal.prompt.web.dto.request.SourceSystemRequest;
 import com.sal.prompt.web.utils.Constants;
 import lombok.Data;
 
@@ -9,8 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Data
-public class DSDRequest {
-
+public class DSDPORequest implements SourceSystemRequest {
     @NotEmpty
     @JsonProperty("receipt_id")
     private String receiptId;
@@ -102,4 +102,8 @@ public class DSDRequest {
     @JsonProperty("created_ts")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date createdTs;
+
+
+
+
 }

@@ -1,0 +1,13 @@
+package com.sal.prompt.web.model.lookup;
+
+public enum DSDPOLineLookupEnum {
+    DSD_PO_LINE_ACTION,
+    DSD_PO_LINE_TYPE,
+    DSD_PO_LINE_CATEGORY,
+    DSD_PO_LINE_UOM_POUND,
+    DSD_PO_LINE_UOM_CASE,
+    DSD_PO_LINE_ATTRIBUTE_CAT,
+    DSD_PO_LINE_LOC_SHIP_TO_ORG,
+    DSD_PO_LINE_LOC_DEST_TYPE_CODE,
+    DSD_PO_LINE_LOC_ACCR_AT_RECPT
+}

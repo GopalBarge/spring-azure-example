@@ -1,11 +1,3 @@
-#azure:
-#  keyvault:
-#    client-id: xxxxxxx
-#    client-key: xxxxxxyyyyy
-#    enabled: true
-#    uri: https://xxx.vault.azure.net/
-
-
 
 client:
   soap:
@@ -21,6 +13,11 @@ client:
 
 azure:
   storage:
-    ConnectionString: DefaultEndpointsProtocol=https;AccountName=gopalbarge;AccountKey=k0Zdx1U890pP/cIz06t/lagklLbLnnLLCbEvmH/zM67pHJH8eivEePR9FjuFS0He3Pyw0eK1E8z4qbAlGJieow==;EndpointSuffix=core.windows.net
+    ConnectionString: DefaultEndpointsProtocol=https;AccountName=saldprompt1;AccountKey=2x7rrxtn7/3TOnnH5hjpc3xB4zOrDLSprh/Mr6t3yPeaz+TXxu9QWpHLuFoTovS+x+D3OAkK2rjMvSpN/otSIA==;EndpointSuffix=core.windows.net
     container:
-      name: gopalbarge
+      name: i180-temp-zip-file
+#azure:
+#  storage:
+#    ConnectionString: DefaultEndpointsProtocol=https;AccountName=gopalbarge;AccountKey=k0Zdx1U890pP/cIz06t/lagklLbLnnLLCbEvmH/zM67pHJH8eivEePR9FjuFS0He3Pyw0eK1E8z4qbAlGJieow==;EndpointSuffix=core.windows.net
+#    container:
+#      name: gopalbarge
