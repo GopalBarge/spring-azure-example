@@ -16,7 +16,7 @@ public class ApplicationRunner {
 //		System.out.println(" = " + getGroupId("AS400_PO_Oracle_BatchID.zip"));
         ConfigurableApplicationContext context = SpringApplication.run(ApplicationRunner.class);
         //Load caches
-        context.getBean(RestClient.class).getLookup();
+        context.getBean(RestClient.class).getLookups();
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.RECEIPT.name());
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.PO.name());
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.INVOICE.name());

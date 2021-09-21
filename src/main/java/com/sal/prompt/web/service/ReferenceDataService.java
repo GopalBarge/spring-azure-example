@@ -34,31 +34,20 @@ public class ReferenceDataService {
 
     @Cacheable("getPOSupplier")
     public Map<String, Supplier> getPOSupplier() {
-        //TODO getting duplicate key 30372
         return getSupplierDetails(SupplierEnum.PO).stream().collect(Collectors.toMap(Supplier::getVendorSiteCodeAlt, Function.identity(), (oldVal, newVal) -> oldVal));
-    }
-
-    @Cacheable("getInvoiceSupplier")
-    public Map<String, Supplier> getInvoiceSupplier() {
-        return getSupplierDetails(SupplierEnum.INVOICE).stream().collect(Collectors.toMap(Supplier::getVendorSiteCodeAlt, Function.identity(), (oldVal, newVal) -> oldVal));
-    }
-
-    @Cacheable("getReceiptSupplier")
-    public Map<String, Supplier> getReceiptSupplier() {
-        return getSupplierDetails(SupplierEnum.RECEIPT).stream().collect(Collectors.toMap(Supplier::getVendorSiteCodeAlt, Function.identity(), (oldVal, newVal) -> oldVal));
     }
 
 
     @Cacheable(cacheNames = "POLookup")
-    public Map<String, String> getPOLookup() {
+    public Map<String, String> getLookups() {
         log.info("getting lookup data from cached lookup");
-        return restClient.getLookup().stream().filter(l -> l.getLookupCode().startsWith(PO_LOOKUP_PREFIX)).collect(Collectors.toMap(Lookup::getLookupCode, Lookup::getDescription));
+        return restClient.getLookups().stream().collect(Collectors.toMap(Lookup::getLookupCode, Lookup::getDescription));
     }
 
-    @Cacheable(cacheNames = "getPOLookupByCode")
-    public String getPOLookupByCode(String lookupCode) {
+    @Cacheable(cacheNames = "getLookupByCode")
+    public String getLookupByCode(String lookupCode) {
         log.info("getting lookup data for lookupCode {}", lookupCode);
-        return getPOLookup().get(PO_LOOKUP_PREFIX.concat(lookupCode));
+        return getLookups().get(lookupCode);
     }
 
     @Cacheable(cacheNames = "getPOSupplierByCode")

@@ -114,7 +114,7 @@ public class FBDIFormatService {
             e.printStackTrace();
         } catch (CsvDataTypeMismatchException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -20,11 +21,40 @@ public class RestClient {
     private String lookupHost;
     private final RestTemplate restTemplate;
 
-    @Cacheable(cacheNames = "getLookup")
-    public List<Lookup> getLookup() {
+    @Cacheable(cacheNames = "getSupplyChainLookup")
+    public List<Lookup> getSupplyChainLookup() {
         log.info("getting lookup data from rest end point");
+        String promptLookupUrl = lookupHost + "?q=LookupType=PROMPT_TEST";
         ResponseEntity<LookupResponse> response = restTemplate.getForEntity(lookupHost, LookupResponse.class);
         log.info("Response received {}", response.getStatusCode().toString());
         return response.getBody().getItems();
     }
+    @Cacheable(cacheNames = "getDSDLookup")
+    public List<Lookup> getDistributionLookup() {
+        log.info("getting lookup data from rest end point");
+        String promptLookupUrl = lookupHost + "?q=LookupType=SAL_PROMPT_REPL_GL_LKP";
+        ResponseEntity<LookupResponse> response = restTemplate.getForEntity(lookupHost, LookupResponse.class);
+        log.info("Response received {}", response.getStatusCode().toString());
+        return response.getBody().getItems();
+    }
+
+    @Cacheable(cacheNames = "getLookups")
+    public List<Lookup> getLookups() {
+        log.info("getting lookup data from rest end point");
+        List<Lookup> salPromptReplLkp = getLookupResponse(lookupHost + "SAL_PROMPT_REPL_LKP" + "&limit=300");
+        List<Lookup> salPromptBuyerLkp = getLookupResponse(lookupHost + "SAL_PROMPT_BUYER_LKP" + "&limit=300");
+        List<Lookup> salPromptReplGlLkp = getLookupResponse(lookupHost + "SAL_PROMPT_REPL_GL_LKP" + "&limit=300");
+
+        List<Lookup> lookups = new ArrayList<>();
+        lookups.addAll(salPromptReplLkp);
+        lookups.addAll(salPromptBuyerLkp);
+        lookups.addAll(salPromptReplGlLkp);
+        return lookups;
+    }
+    public List<Lookup> getLookupResponse(String url){
+        ResponseEntity<LookupResponse> response = restTemplate.getForEntity(url, LookupResponse.class);
+        log.info("Response received {}", response.getStatusCode().toString());
+        return response.getBody().getItems();
+    }
+
 }

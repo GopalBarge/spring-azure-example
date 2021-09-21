@@ -27,19 +27,20 @@ public abstract class SourceDataProcessor {
 
     public boolean process(List<? extends SourceSystemRequest> request) {
         AtomicReference<Boolean> hasError = new AtomicReference<>(false);
-        List<TargetSystemResponse> transformedData = request.stream().map(data -> transform(data)).collect(Collectors.toList());
+        String batchId = getBatchId();
+        List<TargetSystemResponse> transformedData = request.stream().map(data -> transform(data,batchId)).collect(Collectors.toList());
         Map<String, List> dataToWrite =  getFileDataMap(transformedData);
-        String zipFileName = String.format("%s_%s_%s.zip",getSourceSystem(), getTargetSystem(),getBatchId());
+        String zipFileName = String.format("%s_%s_%s.zip",getSourceSystem(), getTargetSystem(),batchId);
         boolean isUploaded = fbdiFormatService.prepareFBDIFiles(dataToWrite, zipFileName);
 
         if (!isUploaded) {
             hasError.set(true);
         }
-        return hasError.get();
+        return !hasError.get();
     }
 
     protected abstract Map<String, List> getFileDataMap(List<TargetSystemResponse> transformedData);
 
 
-    protected abstract TargetSystemResponse transform(SourceSystemRequest input);
+    protected abstract TargetSystemResponse transform(SourceSystemRequest input, String batchId);
 }

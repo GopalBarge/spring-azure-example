@@ -85,6 +85,7 @@ public class DSDPORequest implements SourceSystemRequest {
     private String storeName;
     @NotEmpty
     @JsonProperty("supplier_invoice_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private String supplierInvoiceDate;
     @NotEmpty
     @JsonProperty("Buyer")

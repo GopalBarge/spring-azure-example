@@ -14,73 +14,73 @@ import java.util.List;
 public class SupplyChainPORequest implements SourceSystemRequest {
 
     @NotEmpty
-    @JsonProperty("BUYER")
+    //@JsonProperty("BUYER")
     private String buyer;
     @NotEmpty
-    @JsonProperty("PO_NBR")
+    //@JsonProperty("PO_NBR")
     private String poNbr;
     @NotEmpty
-    @JsonProperty("VENDOR_NBR")
+    //@JsonProperty("VENDOR_NBR")
     private String vendorNbr;
     @NotEmpty
-    @JsonProperty("VENDOR_FAC")
+    //@JsonProperty("VENDOR_FAC")
     private String vendorFac;
     @NotEmpty
-    @JsonProperty("VEND_FAC_NAME")
+    //@JsonProperty("VEND_FAC_NAME")
     private String vendFacName;
     @NotEmpty
-    @JsonProperty("BUYER_NAME")
+    //@JsonProperty("BUYER_NAME")
     private String buyerName;
     @NotEmpty
-    @JsonProperty("FREIGHT_ALLOW")
+    //@JsonProperty("FREIGHT_ALLOW")
     private String freightAllow;
     @NotEmpty
-    @JsonProperty("TERMS_PERCENT")
+    //@JsonProperty("TERMS_PERCENT")
     private String termsPercent;
     @NotEmpty
-    @JsonProperty("TERMS_DAYS")
+    //@JsonProperty("TERMS_DAYS")
     private String termsDays;
     @NotEmpty
-    @JsonProperty("TERMS_NET_DAYS")
+    //@JsonProperty("TERMS_NET_DAYS")
     private String termsNetDays;
     @NotEmpty
-    @JsonProperty("DATE_PICKUP")
+    //@JsonProperty("DATE_PICKUP")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date datePickup;
     @NotEmpty
-    @JsonProperty("DATE_ORDERED")
+    //@JsonProperty("DATE_ORDERED")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date dateOrdered;
     @NotEmpty
-    @JsonProperty("DATE_RECEIVED")
+    //@JsonProperty("DATE_RECEIVED")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date dateReceived;
     @NotEmpty
-    @JsonProperty("BACKHAUL")
+    //@JsonProperty("BACKHAUL")
     private String backhaul;
     @NotEmpty
-    @JsonProperty("FLAG_BACKHAUL")
+    //@JsonProperty("FLAG_BACKHAUL")
     private String flagBackhaul;
     @NotEmpty
-    @JsonProperty("FLAG_TRUCK")
+    //@JsonProperty("FLAG_TRUCK")
     private String flagTruck;
     @NotEmpty
-    @JsonProperty("FREIGHT_BILL_FLAG")
+    //@JsonProperty("FREIGHT_BILL_FLAG")
     private String freightBillFlag;
     @NotEmpty
-    @JsonProperty("ORDERED_WEIGHT")
+    //@JsonProperty("ORDERED_WEIGHT")
     private Integer orderedWeight;
     @NotEmpty
-    @JsonProperty("ORDERED_QTY")
+    //@JsonProperty("ORDERED_QTY")
     private Integer orderedQty;
     @NotEmpty
-    @JsonProperty("WHSE_NO")
+    //@JsonProperty("WHSE_NO")
     private Integer whseNo;
     @NotEmpty
-    @JsonProperty("OPERATION_FLAG")
+    //@JsonProperty("OPERATION_FLAG")
     private String operationFlag;
     @NotEmpty
-    @JsonProperty("PO_LINES")
+    //@JsonProperty("PO_LINES")
     private List<PoLines> poLines;
 
 

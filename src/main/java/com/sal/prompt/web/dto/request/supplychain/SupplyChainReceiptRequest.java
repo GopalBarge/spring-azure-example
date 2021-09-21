@@ -1,10 +1,15 @@
 package com.sal.prompt.web.dto.request.supplychain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sal.prompt.web.dto.request.SourceSystemRequest;
+import com.sal.prompt.web.utils.Constants;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.Date;
+import java.util.List;
 
 @Data
 public class SupplyChainReceiptRequest implements SourceSystemRequest {
@@ -25,7 +30,8 @@ public class SupplyChainReceiptRequest implements SourceSystemRequest {
     private String itemDesc;
     @NotEmpty
     @JsonProperty("RCV_DATE")
-    private String rcvDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
+    private Date rcvDate;
     @NotEmpty
     @JsonProperty("ITEM_FACILITY")
     private String itemFacility;
@@ -65,4 +71,5 @@ public class SupplyChainReceiptRequest implements SourceSystemRequest {
     @NotEmpty
     @JsonProperty("BUYER_NBR")
     private String buyerNbr;
+
 }
