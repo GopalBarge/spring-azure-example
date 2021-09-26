@@ -29,6 +29,7 @@ public class RestClient {
         log.info("Response received {}", response.getStatusCode().toString());
         return response.getBody().getItems();
     }
+
     @Cacheable(cacheNames = "getDSDLookup")
     public List<Lookup> getDistributionLookup() {
         log.info("getting lookup data from rest end point");
@@ -36,6 +37,16 @@ public class RestClient {
         ResponseEntity<LookupResponse> response = restTemplate.getForEntity(lookupHost, LookupResponse.class);
         log.info("Response received {}", response.getStatusCode().toString());
         return response.getBody().getItems();
+    }
+
+    @Cacheable(cacheNames = "getSalWhseToLocLookups")
+    public List<Lookup> getSalWhseToLocLookups() {
+        return getLookupResponse(lookupHost + "SAL_WHSE_TO_LOC_LKP" + "&limit=300");
+    }
+
+    @Cacheable(cacheNames = "getSalBuyerMappingLookups")
+    public List<Lookup> getSalBuyerMappingLookups() {
+        return getLookupResponse(lookupHost + "SAL_BUYER_MAPPING_LKP" + "&limit=300");
     }
 
     @Cacheable(cacheNames = "getLookups")
@@ -51,7 +62,8 @@ public class RestClient {
         lookups.addAll(salPromptReplGlLkp);
         return lookups;
     }
-    public List<Lookup> getLookupResponse(String url){
+
+    public List<Lookup> getLookupResponse(String url) {
         ResponseEntity<LookupResponse> response = restTemplate.getForEntity(url, LookupResponse.class);
         log.info("Response received {}", response.getStatusCode().toString());
         return response.getBody().getItems();

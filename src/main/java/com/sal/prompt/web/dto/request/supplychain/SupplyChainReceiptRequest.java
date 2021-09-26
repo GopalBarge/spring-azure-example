@@ -71,5 +71,11 @@ public class SupplyChainReceiptRequest implements SourceSystemRequest {
     @NotEmpty
     @JsonProperty("BUYER_NBR")
     private String buyerNbr;
+    @NotEmpty
+    @JsonProperty("ITEM_PACK")
+    private Integer itemPack;
+    @NotEmpty
+    @JsonProperty("ON_ORDER")
+    private Integer onOrder;
 
 }

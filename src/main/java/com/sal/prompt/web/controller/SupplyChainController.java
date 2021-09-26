@@ -48,7 +48,6 @@ public class SupplyChainController {
                 .collect(Collectors.groupingBy(SupplyChainReceiptRequest::getRecptNbr));
         List<SupplychainReceipt> request = map.entrySet().stream().map(e -> new SupplychainReceipt(e.getKey(), e.getValue())).collect(Collectors.toList());
 
-        System.out.println("map = " + map.size());
         boolean processed = processors.stream().filter(p -> p instanceof SupplyChainReceiptProcessor).findAny().get().process(request);
         if (!processed) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);

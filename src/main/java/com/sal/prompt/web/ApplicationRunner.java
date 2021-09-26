@@ -20,6 +20,7 @@ public class ApplicationRunner {
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.RECEIPT.name());
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.PO.name());
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.INVOICE.name());
+        context.getBean(SoapClient.class).getOpenPODetails();
 
 
     }

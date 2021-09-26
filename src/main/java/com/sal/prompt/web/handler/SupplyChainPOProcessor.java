@@ -80,7 +80,7 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
         return poHeaderResponse;
     }
 
-    private void transformPoDistribution(PoLines poLine, POLineLocationResponse poLineLocationResponse) {
+    private void transformPoDistribution(PoLines poLine, POLineLocationResponse poLineLocationResponse, POHeaderResponse headerResponse) {
 
         List<PODistributionResponse> poDistributionResponses = new ArrayList<>();
 
@@ -88,7 +88,7 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
         poDistributionResponse.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
         poDistributionResponse.setInterfaceDistributionKey(getRandomNumber());
         poDistributionResponse.setDistribution(poLineLocationResponse.getSchedule());//Use same Line number# which you referred while creating Line csv file
-        //poDistributionResponse.setRequester(poDistributionResponse.getBu);//TODO check logic
+        poDistributionResponse.setRequester(headerResponse.getBuyer());
 
         poDistributionResponse.setQuantity(poLineLocationResponse.getQuantity());
         poDistributionResponse.setChargeAccountSegment1(referenceDataService.getLookupByCode(LookupEnum.SC_PO_DISTI_SEGMENT1.name()));
@@ -103,16 +103,15 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
         poLineLocationResponse.setPoDistributionResponses(poDistributionResponses);
     }
 
-    private void transformPoLineLocation(PoLines lineRequest, POLineResponse lineResponse) {
+    private void transformPoLineLocation(PoLines lineRequest, POLineResponse lineResponse, POHeaderResponse headerResponse) {
 
         List<POLineLocationResponse> lineLocations = new ArrayList<>();
         POLineLocationResponse poLineLocationResponse = new POLineLocationResponse();
         poLineLocationResponse.setInterfaceLineKey(lineResponse.getInterfaceLineKey());
         poLineLocationResponse.setInterfaceLineLocationKey(getRandomNumber());
         poLineLocationResponse.setSchedule(lineResponse.getLine()); //Use same Line number# which you referred while creating Line csv file
-//        poLineLocationResponse1.setShipToLocation(referenceDataService.getPOLookupByCode(SupplyChainPOLineLookupEnum.SC_PO_LINE_LOC_SHIP_TO_LOC.name()));//TODO ShipToLocation
+        poLineLocationResponse.setShipToLocation(referenceDataService.getShipToLocation(lineRequest.getWhseNo(), LookupEnum.SC_PO_DEF_SHIP_TO_LOC_CODE));//TODO check logic again
         poLineLocationResponse.setShipToOrganization(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_LOC_SHIP_TO_ORG.name()));
-        //poLineLocationResponse.setAmount(lineRequest.getA);//TODO check amount field
 
         poLineLocationResponse.setQuantity(lineResponse.getQuantity());
         poLineLocationResponse.setNeedByDate(getNeedByDate(lineRequest.getDueDate()));
@@ -122,7 +121,7 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
 
         lineLocations.add(poLineLocationResponse);
         lineResponse.setPoLineLocationResponses(lineLocations);
-        transformPoDistribution(lineRequest, poLineLocationResponse);
+        transformPoDistribution(lineRequest, poLineLocationResponse, headerResponse);
     }
 
     private String getNeedByDate(Date dueDate) {
@@ -133,13 +132,13 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
 
     }
 
-    private void transformPoLine(SupplyChainPORequest requestHeader, POHeaderResponse headerresponse) {
+    private void transformPoLine(SupplyChainPORequest requestHeader, POHeaderResponse headerResponse) {
         List<POLineResponse> poLineResponses = new ArrayList<>();
         Integer lineNum = 0;
         for (PoLines poLine : requestHeader.getPoLines()) {
             lineNum = lineNum + 1;
             POLineResponse poLineResponse = new POLineResponse();
-            poLineResponse.setInterfaceHeaderKey(headerresponse.getInterfaceHeaderKey());
+            poLineResponse.setInterfaceHeaderKey(headerResponse.getInterfaceHeaderKey());
             poLineResponse.setInterfaceLineKey(getRandomNumber());
             poLineResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_ACTION.name()));
             poLineResponse.setLine(String.valueOf(lineNum));
@@ -173,56 +172,56 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
             poLineResponse.setAttribute12(poLine.getAmtBackhaul());
             poLineResponse.setAttribute13(String.valueOf(poLine.getLastCost()));
             poLineResponses.add(poLineResponse);
-            transformPoLineLocation(poLine, poLineResponse);
+            transformPoLineLocation(poLine, poLineResponse, headerResponse);
         }
-        headerresponse.setPoLineResponses(poLineResponses);
+        headerResponse.setPoLineResponses(poLineResponses);
 
     }
 
-    private void transformPoHeader(SupplyChainPORequest poHeader, String batchId, POHeaderResponse poHeaderResponse) {
-        poHeaderResponse.setInterfaceHeaderKey(getRandomNumber());
-        poHeaderResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.SC_PO_ACTION.name()));
-        poHeaderResponse.setBatchID(batchId);
+    private void transformPoHeader(SupplyChainPORequest request, String batchId, POHeaderResponse response) {
+        response.setInterfaceHeaderKey(getRandomNumber());
+        response.setAction(referenceDataService.getLookupByCode(LookupEnum.SC_PO_ACTION.name()));
+        response.setBatchID(batchId);
 
-        poHeaderResponse.setImportSource(referenceDataService.getLookupByCode(LookupEnum.SC_PO_IMPORT_SOURCE.name()));
-        poHeaderResponse.setApprovalAction(referenceDataService.getLookupByCode(LookupEnum.SC_PO_APPROVAL_ACTION.name()));
-        poHeaderResponse.setDocumentTypeCode(referenceDataService.getLookupByCode(LookupEnum.SC_PO_DOC_TYPE_CODE.name()));
-        poHeaderResponse.setStyle("");//TODO TBD no info in sheet
-        poHeaderResponse.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_PRC_BU.name()));
-        poHeaderResponse.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_REQ_BU.name()));
-        poHeaderResponse.setSoldToLegalEntity(referenceDataService.getLookupByCode(LookupEnum.SC_PO_SOLD_TO_LEGAL_ENTITY.name()));
-        poHeaderResponse.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_BILL_BU.name()));//billtoBu
-        poHeaderResponse.setBuyer(referenceDataService.getLookupByCode(poHeader.getBuyer()));//TODO check logic Buyer need to map scane looked (pending)
-        poHeaderResponse.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.SC_PO_CURRENCY_CODE.name()));//CurrencyCode
-        poHeaderResponse.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.SC_PO_BILL_TO_LOC.name()));//BillToLocation
+        response.setImportSource(referenceDataService.getLookupByCode(LookupEnum.SC_PO_IMPORT_SOURCE.name()));
+        response.setApprovalAction(referenceDataService.getLookupByCode(LookupEnum.SC_PO_APPROVAL_ACTION.name()));
+        response.setDocumentTypeCode(referenceDataService.getLookupByCode(LookupEnum.SC_PO_DOC_TYPE_CODE.name()));
+        response.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_PRC_BU.name()));
+        response.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_REQ_BU.name()));
+        response.setSoldToLegalEntity(referenceDataService.getLookupByCode(LookupEnum.SC_PO_SOLD_TO_LEGAL_ENTITY.name()));
+        response.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.SC_PO_BILL_BU.name()));
+        response.setBuyer(referenceDataService.getBuyer(request.getBuyer(), LookupEnum.SC_PO_DEF_BUYER));
+        response.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.SC_PO_CURRENCY_CODE.name()));
+        response.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.SC_PO_BILL_TO_LOC.name()));
 
-        poHeaderResponse.setShipToLocation("");//TODO check logic no lookup available similar to buyer
-        Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(poHeader.getVendorNbr());
+        String shipToLocation = referenceDataService.getShipToLocation(request.getWhseNo(), LookupEnum.SC_PO_DEF_SHIP_TO_LOC_CODE);
+        response.setShipToLocation(shipToLocation);
+        Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(request.getVendorNbr());
         if (supplierOpt.isPresent()) {
             Supplier supplier = supplierOpt.get();
-            poHeaderResponse.setSupplier(supplier.getSupplierName());
-            poHeaderResponse.setSupplierNumber(supplier.getSupplierNumber());
-            poHeaderResponse.setSupplierSite(supplier.getSupplierSiteCode());
+            response.setSupplier(supplier.getSupplierName());
+            response.setSupplierNumber(supplier.getSupplierNumber());
+            response.setSupplierSite(supplier.getSupplierSiteCode());
         }
-        String paymentTerms = getPaymentTerms(poHeader);
-        poHeaderResponse.setPaymentTerms(paymentTerms);
-        poHeaderResponse.setRequiredAcknowledgment(referenceDataService.getLookupByCode(LookupEnum.SC_PO_REQU_ACK.name()));
-        poHeaderResponse.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.SC_PO_ATTRIBUTE_CAT.name()));
-        poHeaderResponse.setAttribute1(poHeader.getBuyer());
-        poHeaderResponse.setAttribute2(poHeader.getBuyerName());
-        poHeaderResponse.setAttribute3(poHeader.getPoNbr());
-        poHeaderResponse.setAttribute4(poHeader.getVendorFac());
-        poHeaderResponse.setAttribute5(poHeader.getVendFacName());
-        poHeaderResponse.setAttribute6(poHeader.getVendorNbr());
-        poHeaderResponse.setAttribute7(intToStringConvertor(poHeader.getOrderedQty()));
-        poHeaderResponse.setAttribute8(intToStringConvertor(poHeader.getOrderedWeight()));
-        poHeaderResponse.setAttribute9(poHeader.getFreightAllow());
-        poHeaderResponse.setAttribute13(poHeader.getBackhaul());
-        poHeaderResponse.setAttribute14(poHeader.getFlagBackhaul());
-        poHeaderResponse.setAttribute15(poHeader.getFreightBillFlag());
-        poHeaderResponse.setAttributeDate1(dateConvertor(poHeader.getDateOrdered()));
-        poHeaderResponse.setAttributeDate2(dateConvertor(poHeader.getDatePickup()));
-        poHeaderResponse.setAttributeDate3(dateConvertor(poHeader.getDateReceived()));
+        String paymentTerms = getPaymentTerms(request);
+        response.setPaymentTerms(paymentTerms);
+        response.setRequiredAcknowledgment(referenceDataService.getLookupByCode(LookupEnum.SC_PO_REQU_ACK.name()));
+        response.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.SC_PO_ATTRIBUTE_CAT.name()));
+        response.setAttribute1(request.getBuyer());
+        response.setAttribute2(request.getBuyerName());
+        response.setAttribute3(request.getPoNbr());
+        response.setAttribute4(request.getVendorFac());
+        response.setAttribute5(request.getVendFacName());
+        response.setAttribute6(request.getVendorNbr());
+        response.setAttribute7(intToStringConvertor(request.getOrderedQty()));
+        response.setAttribute8(intToStringConvertor(request.getOrderedWeight()));
+        response.setAttribute9(request.getFreightAllow());
+        response.setAttribute13(request.getBackhaul());
+        response.setAttribute14(request.getFlagBackhaul());
+        response.setAttribute15(request.getFreightBillFlag());
+        response.setAttributeDate1(dateConvertor(request.getDateOrdered()));
+        response.setAttributeDate2(dateConvertor(request.getDatePickup()));
+        response.setAttributeDate3(dateConvertor(request.getDateReceived()));
     }
 
     private String dateConvertor(Date value) {

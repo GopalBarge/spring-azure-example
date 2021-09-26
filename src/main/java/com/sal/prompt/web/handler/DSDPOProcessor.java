@@ -73,8 +73,6 @@ public class DSDPOProcessor extends SourceDataProcessor {
             DSDPORequest input = (DSDPORequest) request;
             transformPoHeader(input, batchId, poHeaderResponse);
             transformPoLine(input, poHeaderResponse);
-//            transformPoLineLocation(input.getPOHeader(), poHeaderResponse);
-//            transformPoDistribution(input.getPOHeader(), poHeaderResponse);
         }
         return poHeaderResponse;
     }
@@ -129,13 +127,12 @@ public class DSDPOProcessor extends SourceDataProcessor {
 
     }
 
-    private void transformPoLine(DSDPORequest poLine, POHeaderResponse headerresponse) {
+    private void transformPoLine(DSDPORequest poLine, POHeaderResponse poHeaderResponse) {
         List<POLineResponse> poLineResponses = new ArrayList<>();
         Integer lineNum = 0;
-//        for (PoLines poLine : requestHeader.getPoLines()) {
             lineNum = lineNum + 1;
             POLineResponse poLineResponse = new POLineResponse();
-            poLineResponse.setInterfaceHeaderKey(headerresponse.getInterfaceHeaderKey());
+            poLineResponse.setInterfaceHeaderKey(poHeaderResponse.getInterfaceHeaderKey());
             poLineResponse.setInterfaceLineKey(getRandomNumber());
             poLineResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_ACTION.name()));
             poLineResponse.setLine(String.valueOf(lineNum));
@@ -173,7 +170,7 @@ public class DSDPOProcessor extends SourceDataProcessor {
             poLineResponses.add(poLineResponse);
             transformPoLineLocation(poLine, poLineResponse);
 //        }
-        headerresponse.setPoLineResponses(poLineResponses);
+        poHeaderResponse.setPoLineResponses(poLineResponses);
 
     }
 
@@ -185,10 +182,10 @@ public class DSDPOProcessor extends SourceDataProcessor {
         poHeaderResponse.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_PRC_BU.name()));
         poHeaderResponse.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQ_BU.name()));
         poHeaderResponse.setSoldToLegalEntity(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_SOLD_TO_LEGAL_ENTITY.name()));
-        poHeaderResponse.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_BU.name()));//billtoBu
+        poHeaderResponse.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_BU.name()));
         poHeaderResponse.setBuyer(referenceDataService.getLookupByCode(poHeader.getBuyer()));//TODO check logic Buyer need to map
-        poHeaderResponse.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_CURRENCY_CODE.name()));//CurrencyCode
-        poHeaderResponse.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_TO_LOC.name()));//BillToLocation
+        poHeaderResponse.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_CURRENCY_CODE.name()));
+        poHeaderResponse.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_TO_LOC.name()));
 
         poHeaderResponse.setShipToLocation("");//TODO check logic no lookup available
         Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(poHeader.getVendorNo());

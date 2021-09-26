@@ -14,4 +14,6 @@ public class Lookup {
     private String lookupCode;
     @JsonProperty("Description")
     private String description;
+    @JsonProperty("Tag")
+    private String tag;
 }
