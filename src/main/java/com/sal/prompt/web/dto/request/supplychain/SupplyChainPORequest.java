@@ -79,6 +79,17 @@ public class SupplyChainPORequest implements SourceSystemRequest {
     @NotEmpty
     //@JsonProperty("OPERATION_FLAG")
     private String operationFlag;
+
+    @NotEmpty
+    //@JsonProperty("PICKUP_COST")
+    private String pickupCost;
+    @NotEmpty
+    //@JsonProperty("DEFAULT_FBC_COST")
+    private String defaultFbcCost;
+    @NotEmpty
+    //@JsonProperty("MASTER_NUMBER")
+    private String masterNumber;
+
     @NotEmpty
     //@JsonProperty("PO_LINES")
     private List<PoLines> poLines;

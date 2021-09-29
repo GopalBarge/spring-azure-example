@@ -37,6 +37,10 @@ public class ReferenceDataService {
     public Map<String, Supplier> getPOSupplier() {
         return getSupplierDetails(SupplierEnum.PO).stream().collect(Collectors.toMap(Supplier::getVendorSiteCodeAlt, Function.identity(), (oldVal, newVal) -> oldVal));
     }
+    @Cacheable("getReceiptSupplier")
+    public Map<String, Supplier> getReceiptSupplier() {
+        return getSupplierDetails(SupplierEnum.RECEIPT).stream().collect(Collectors.toMap(Supplier::getVendorSiteCodeAlt, Function.identity(), (oldVal, newVal) -> oldVal));
+    }
 
 
     @Cacheable(cacheNames = "POLookup")
@@ -56,13 +60,18 @@ public class ReferenceDataService {
         log.info("getting supplier data for supplierCodeAlt {}", supplierCodeAlt);
         return Optional.ofNullable(getPOSupplier().get(supplierCodeAlt));
     }
-
-    @Cacheable(cacheNames = "getOpenPos")
-    public List<OpenPO> getOpenPos(String poNumber) {
-        return soapClient.getOpenPODetails().get(poNumber);
+    @Cacheable(cacheNames = "getPOSupplierByCode")
+    public Optional<Supplier> getReceiptSupplierByCode(String supplierCodeAlt) {
+        log.info("getting supplier data for supplierCodeAlt {}", supplierCodeAlt);
+        return Optional.ofNullable(getReceiptSupplier().get(supplierCodeAlt));
     }
 
-    public String getShipToLocation(Integer whseNo, LookupEnum lookup) {
+    @Cacheable(cacheNames = "getOpenPos")
+    public List<OpenPO> getOpenPos(String poNumber, POTypesEnum pType) {
+        return soapClient.getOpenDetails(pType).get(poNumber);
+    }
+
+    public String getShipToLocation(String whseNo, LookupEnum lookup) {
         Optional<String> shipToLocationOpt = restClient.getSalWhseToLocLookups().stream().filter(l -> l.getTag().equalsIgnoreCase(String.valueOf(whseNo))).map(l -> l.getDescription()).findAny();
 
         return shipToLocationOpt.isPresent() ? shipToLocationOpt.get() : getLookupByCode(lookup.name());

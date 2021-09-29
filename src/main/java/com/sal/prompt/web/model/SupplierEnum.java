@@ -2,6 +2,7 @@ package com.sal.prompt.web.model;
 
 public enum SupplierEnum {
     PO,
-    INVOICE,
-    RECEIPT
+    INVOICE_880,
+    RECEIPT,
+    HANDHELD_INVOICE
 }

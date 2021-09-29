@@ -10,11 +10,13 @@ import com.sal.prompt.web.dto.request.supplychain.SupplychainReceipt;
 import com.sal.prompt.web.dto.response.*;
 import com.sal.prompt.web.model.LookupEnum;
 import com.sal.prompt.web.model.OpenPO;
+import com.sal.prompt.web.model.POTypesEnum;
 import com.sal.prompt.web.model.Supplier;
 import com.sal.prompt.web.model.lookup.SupplyChainPOLineLookupEnum;
 import com.sal.prompt.web.model.lookup.SupplyChainPOLookupEnum;
 import com.sal.prompt.web.service.FBDIFormatService;
 import com.sal.prompt.web.service.ReferenceDataService;
+import com.sal.prompt.web.utils.CommonUtility;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -22,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.sal.prompt.web.utils.CommonUtility.dateToString;
+import static com.sal.prompt.web.utils.CommonUtility.getDate;
 
 @Component
 public class SupplyChainReceiptProcessor extends SourceDataProcessor {
@@ -46,11 +49,6 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
     @Override
     String getTargetSystem() {
         return "Oracle";
-    }
-
-    @Override
-    String getBatchId() {
-        return String.valueOf(System.currentTimeMillis());
     }
 
     private String getRandomNumber() {
@@ -88,17 +86,17 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             ReceiptLineResponse poLineResponse = new ReceiptLineResponse();
             poLineResponse.setInterfaceLineNumber(String.valueOf(lineNum));
             poLineResponse.setTransactionType(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_TXN_TYPE.name()));
-            poLineResponse.setAutoTransactCode(dateToString(poLine.getRcvDate()));//TODO check logic SYSDate
+            poLineResponse.setAutoTransactCode(dateToString(poLine.getRcvDate()));//TODO check logic no Lookup present
             poLineResponse.setSourceDocumentCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_SOURCE_DOC_CODE.name()));
             poLineResponse.setReceiptSourceCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_SOURCE_CODE.name()));
             poLineResponse.setHeaderInterfaceNumber(response.getHeaderInterfaceNumber());
             poLineResponse.setItemDescription(poLine.getItemDesc());
-            List<OpenPO> openPos = referenceDataService.getOpenPos(poLine.getPoNbr());
+            List<OpenPO> openPos = referenceDataService.getOpenPos(poLine.getPoNbr(), POTypesEnum.AS400); //TODO check p_type for AS400 receipt
             Optional<String> documentNumber = openPos.stream().filter(po ->
                     po.getVendorNbr().equalsIgnoreCase(poLine.getVendorNbr())
                     && po.getItemFacility().equalsIgnoreCase(poLine.getItemFacility())).map(po -> po.getDocumentNumber()).findFirst();
             if(!documentNumber.isPresent()){
-                throw new Exception("Document number  not found");
+                throw new Exception("Document number not found");
             }
             Optional<String> documentLine = openPos.stream().filter(po -> (
                     po.getItemFacility().equalsIgnoreCase(poLine.getItemFacility()) &&
@@ -106,7 +104,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
                     po.getItemUpc().equalsIgnoreCase(String.valueOf(poLine.getItemUpc())))
              ).map(po -> po.getDocumentNumber()).findFirst();
             if(!documentLine.isPresent()){
-                throw new Exception("Document line  not found");
+                throw new Exception("Document line not found");
             }
 
             poLineResponse.setDocumentNumber(documentNumber.get());
@@ -114,16 +112,18 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             poLineResponse.setDocumentScheduleNumber(poLineResponse.getDocumentLineNumber());
             poLineResponse.setDocumentDistributionNumber(poLineResponse.getDocumentLineNumber());
             poLineResponse.setBusinessUnit(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_BU.name()));
-            Integer quantity = poLine.getOnOrder(); 
+            poLineResponse.setExpectedReceiptDate(CommonUtility.dateToString(poLine.getRcvDate()));
+
+            Integer quantity = poLine.getOnOrder();
             String uom = "CS";
             if ("LBS".equalsIgnoreCase(poLine.getHiItemSize()) || "LB AVG".equalsIgnoreCase(poLine.getHiItemSize())) {
-                if (Integer.valueOf(poLine.getItemLstCost()) <= 7) { //TODO check logic again its same for < or > and what in case of equal to 7
+//                if (Integer.valueOf(poLine.getItemLstCost()) <= 7) { //TODO check logic again its same for < or > and what in case of equal to 7
                     quantity = poLine.getItemPack() * poLine.getOnOrder();
                     uom = "LBS";
-                } else {
-                    quantity = poLine.getItemPack() * poLine.getOnOrder();
-                    uom = "LBS";
-                }
+//                } else {
+//                    quantity = poLine.getItemPack() * poLine.getOnOrder();
+//                    uom = "LBS";
+//                }
             }
 
                 poLineResponse.setQuantity(String.valueOf(quantity));
@@ -141,7 +141,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             response.setReceiptSourceCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_SOURCE_CODE.name()));
             response.setASNType(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_ASN_TYPE.name()));
             response.setTransactionType(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_TXN_TYPE.name()));
-            Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(request.getVendorNbr());
+            Optional<Supplier> supplierOpt = referenceDataService.getReceiptSupplierByCode(request.getVendorNbr());
             if (supplierOpt.isPresent()) {
                 Supplier supplier = supplierOpt.get();
                 response.setSupplierName(supplier.getSupplierName());
@@ -149,7 +149,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             }
 
             response.setEmployeeName(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_EMP_NAME.name()));
-            response.setTransactionDate(dateToString(request.getRcvDate()));
+            response.setTransactionDate(getDate());//TODO heck again if sysdate logic is correct
             response.setBusinessUnit(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_BU.name()));
             response.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_ATTRIBUTE_CAT.name()));
             response.setAttribute1(request.getPoNbr());
@@ -157,12 +157,12 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             response.setAttribute3(request.getDepartment());
             response.setAttribute4(request.getDepartName());
             response.setAttribute5(String.valueOf(request.getQtyOrdered()));
-            response.setAttribute6(String.valueOf(request.getItemUpc()));
-            response.setAttribute7(String.valueOf(request.getLastCost()));
-            response.setAttribute8(request.getItemNbr());
-            response.setAttribute9(request.getMerchNbr());
-            response.setAttribute10(request.getOffInvoice());
+            response.setAttribute7(String.valueOf(request.getItemUpc()));
+            response.setAttribute8(String.valueOf(request.getLastCost()));
+            response.setAttribute9(request.getItemNbr());
+            response.setAttribute10(request.getMerchNbr());
             response.setAttribute11(request.getBuyerNbr());
-            response.setAttribute12(dateToString(request.getRcvDate()));
+
+            response.setAttributeDate1(dateToString(request.getRcvDate()));
         }
     }

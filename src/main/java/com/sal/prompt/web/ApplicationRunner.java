@@ -2,6 +2,8 @@ package com.sal.prompt.web;
 
 import com.sal.prompt.web.client.rest.RestClient;
 import com.sal.prompt.web.client.soap.SoapClient;
+import com.sal.prompt.web.model.POLookupEnum;
+import com.sal.prompt.web.model.POTypesEnum;
 import com.sal.prompt.web.model.SupplierEnum;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,8 +21,11 @@ public class ApplicationRunner {
         context.getBean(RestClient.class).getLookups();
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.RECEIPT.name());
         context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.PO.name());
-        context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.INVOICE.name());
-        context.getBean(SoapClient.class).getOpenPODetails();
+        context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.INVOICE_880.name());
+        context.getBean(SoapClient.class).getSupplierDetails(SupplierEnum.HANDHELD_INVOICE.name());
+        context.getBean(SoapClient.class).getOpenDetails(POTypesEnum.AS400);
+        context.getBean(SoapClient.class).getOpenDetails(POTypesEnum.DSD_RECPT);
+        context.getBean(SoapClient.class).getOpenDetails(POTypesEnum.HANDHELD);
 
 
     }

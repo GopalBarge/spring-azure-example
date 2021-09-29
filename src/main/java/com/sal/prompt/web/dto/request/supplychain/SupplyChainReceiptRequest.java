@@ -14,68 +14,68 @@ import java.util.List;
 @Data
 public class SupplyChainReceiptRequest implements SourceSystemRequest {
     @NotEmpty
-    @JsonProperty("RECPT_NBR")
+    //@JsonProperty("RECPT_NBR")
     private String recptNbr;
     @NotEmpty
-    @JsonProperty("PO_NBR")
+    //@JsonProperty("PO_NBR")
     private String poNbr;
     @NotEmpty
-    @JsonProperty("VENDOR_NBR")
+    //@JsonProperty("VENDOR_NBR")
     private String vendorNbr;
     @NotEmpty
-    @JsonProperty("QTY_RECEIVED")
+    //@JsonProperty("QTY_RECEIVED")
     private Integer qtyReceived;
     @NotEmpty
-    @JsonProperty("ITEM_DESC")
+    //@JsonProperty("ITEM_DESC")
     private String itemDesc;
     @NotEmpty
-    @JsonProperty("RCV_DATE")
+    //@JsonProperty("RCV_DATE")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date rcvDate;
     @NotEmpty
-    @JsonProperty("ITEM_FACILITY")
+    //@JsonProperty("ITEM_FACILITY")
     private String itemFacility;
     @NotEmpty
-    @JsonProperty("DEPARTMENT")
+    //@JsonProperty("DEPARTMENT")
     private String department;
     @NotEmpty
-    @JsonProperty("DEPART_NAME")
+    //@JsonProperty("DEPART_NAME")
     private String departName;
     @NotEmpty
-    @JsonProperty("QTY_ORDERED")
+    //@JsonProperty("QTY_ORDERED")
     private Integer qtyOrdered;
     @NotEmpty
-    @JsonProperty("ITEM_UPC")
+    //@JsonProperty("ITEM_UPC")
     private Integer itemUpc;
     @NotEmpty
-    @JsonProperty("LAST_COST")
+    //@JsonProperty("LAST_COST")
     private Integer lastCost;
     @NotEmpty
-    @JsonProperty("ITEM_NBR")
+    //@JsonProperty("ITEM_NBR")
     private String itemNbr;
     @NotEmpty
-    @JsonProperty("MERCH_NBR")
+    //@JsonProperty("MERCH_NBR")
     private String merchNbr;
     @NotEmpty
-    @JsonProperty("OFF_INVOICE")
+    //@JsonProperty("OFF_INVOICE")
     private String offInvoice;
     @NotEmpty
-    @JsonProperty("HI_STORE_PACK")
+    //@JsonProperty("HI_STORE_PACK")
     private String hiStorePack;
     @NotEmpty
-    @JsonProperty("HI_ITEM_SIZE")
+    //@JsonProperty("HI_ITEM_SIZE")
     private String hiItemSize;
     @NotEmpty
-    @JsonProperty("ITEM_LST_COST")
+    //@JsonProperty("ITEM_LST_COST")
     private String itemLstCost;
     @NotEmpty
-    @JsonProperty("BUYER_NBR")
+    //@JsonProperty("BUYER_NBR")
     private String buyerNbr;
     @NotEmpty
-    @JsonProperty("ITEM_PACK")
+    //@JsonProperty("ITEM_PACK")
     private Integer itemPack;
     @NotEmpty
-    @JsonProperty("ON_ORDER")
+    //@JsonProperty("ON_ORDER")
     private Integer onOrder;
 
 }

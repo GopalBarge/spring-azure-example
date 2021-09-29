@@ -8,6 +8,8 @@ import com.sal.prompt.web.model.Supplier;
 import com.sal.prompt.web.service.FBDIFormatService;
 import com.sal.prompt.web.service.ReferenceDataService;
 import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.NotEmpty;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -42,10 +44,6 @@ public class DSDPOProcessor extends SourceDataProcessor {
         return "Oracle";
     }
 
-    @Override
-    String getBatchId() {
-        return String.valueOf(System.currentTimeMillis());
-    }
 
     private String getRandomNumber() {
         return String.valueOf(System.currentTimeMillis());
@@ -77,7 +75,7 @@ public class DSDPOProcessor extends SourceDataProcessor {
         return poHeaderResponse;
     }
 
-    private void transformPoDistribution(DSDPORequest poLine, POLineLocationResponse poLineLocationResponse) {
+    private void transformPoDistribution(DSDPORequest poLine, POLineLocationResponse poLineLocationResponse, POHeaderResponse response) {
 
         List<PODistributionResponse> poDistributionResponses = new ArrayList<>();
 
@@ -85,9 +83,9 @@ public class DSDPOProcessor extends SourceDataProcessor {
         poDistributionResponse.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
         poDistributionResponse.setInterfaceDistributionKey(getRandomNumber());
         poDistributionResponse.setDistribution(poLineLocationResponse.getSchedule());//Use same Line number# which you referred while creating Line csv file
-        //poDistributionResponse.setRequester(poDistributionResponse.getBu);//TODO check logic
+        poDistributionResponse.setRequester(response.getBuyer());
 
-        poDistributionResponse.setQuantity(poLineLocationResponse.getQuantity());//TODO cross check logic
+        poDistributionResponse.setQuantity(poLineLocationResponse.getQuantity());
         poDistributionResponse.setChargeAccountSegment1(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DISTI_SEGMENT1.name()));
         poDistributionResponse.setChargeAccountSegment2(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DISTI_SEGMENT2.name()));
         poDistributionResponse.setChargeAccountSegment3(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DISTI_SEGMENT3.name()));
@@ -100,23 +98,24 @@ public class DSDPOProcessor extends SourceDataProcessor {
         poLineLocationResponse.setPoDistributionResponses(poDistributionResponses);
     }
 
-    private void transformPoLineLocation(DSDPORequest lineRequest, POLineResponse lineResponse) {
+    private void transformPoLineLocation(DSDPORequest lineRequest, POLineResponse lineResponse, POHeaderResponse response) {
 
         List<POLineLocationResponse> lineLocations = new ArrayList<>();
         POLineLocationResponse poLineLocationResponse = new POLineLocationResponse();
         poLineLocationResponse.setInterfaceLineKey(lineResponse.getInterfaceLineKey());
         poLineLocationResponse.setInterfaceLineLocationKey(getRandomNumber());
         poLineLocationResponse.setSchedule(lineResponse.getLine()); //Use same Line number# which you referred while creating Line csv file
-//        poLineLocationResponse1.setShipToLocation(referenceDataService.getPOLookupByCode(SupplyChainPOLineLookupEnum.SC_PO_LINE_LOC_SHIP_TO_LOC.name()));//TODO ShipToLocation
+        String shipToLocation = referenceDataService.getShipToLocation(lineRequest.getStoreId(), LookupEnum.DSD_PO_DEF_SHIP_TO_LOC_CODE);
+        poLineLocationResponse.setShipToLocation(shipToLocation);
         poLineLocationResponse.setShipToOrganization(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_LOC_SHIP_TO_ORG.name()));
         poLineLocationResponse.setQuantity(lineResponse.getQuantity());
-        //poLineLocationResponse.setNeedByDate(getNeedByDate(lineRequest.getSupplierInvoiceDate())); //TODO Check logic
+        poLineLocationResponse.setNeedByDate(getNeedByDate(lineRequest.getSupplierInvoiceDate()));
         poLineLocationResponse.setDestinationTypeCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_LOC_DEST_TYPE_CODE.name()));
         poLineLocationResponse.setAccrueAtReceipt(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_LOC_ACCR_AT_RECPT.name()));
 
         lineLocations.add(poLineLocationResponse);
         lineResponse.setPoLineLocationResponses(lineLocations);
-        transformPoDistribution(lineRequest, poLineLocationResponse);
+        transformPoDistribution(lineRequest, poLineLocationResponse,response);
     }
 
     private String getNeedByDate(Date dueDate) {
@@ -127,82 +126,89 @@ public class DSDPOProcessor extends SourceDataProcessor {
 
     }
 
-    private void transformPoLine(DSDPORequest poLine, POHeaderResponse poHeaderResponse) {
+    private void transformPoLine(DSDPORequest request, POHeaderResponse response) {
         List<POLineResponse> poLineResponses = new ArrayList<>();
         Integer lineNum = 0;
-            lineNum = lineNum + 1;
-            POLineResponse poLineResponse = new POLineResponse();
-            poLineResponse.setInterfaceHeaderKey(poHeaderResponse.getInterfaceHeaderKey());
-            poLineResponse.setInterfaceLineKey(getRandomNumber());
-            poLineResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_ACTION.name()));
-            poLineResponse.setLine(String.valueOf(lineNum));
-            poLineResponse.setLineType(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_TYPE.name()));
+        lineNum = lineNum + 1;
+        POLineResponse poLineResponse = new POLineResponse();
+        poLineResponse.setInterfaceHeaderKey(response.getInterfaceHeaderKey());
+        poLineResponse.setInterfaceLineKey(getRandomNumber());
+        poLineResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_ACTION.name()));
+        poLineResponse.setLine(String.valueOf(lineNum));
+        poLineResponse.setLineType(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_TYPE.name()));
 
-            poLineResponse.setItemDescription(poLine.getDescription());
-            poLineResponse.setCategoryName(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_CATEGORY.name()));//CategoryName
+        poLineResponse.setItemDescription(request.getDescription());
+        poLineResponse.setCategoryName(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_CATEGORY.name()));
 
-            String uom = "CS";
-            if ("1".equalsIgnoreCase(poLine.getCasePack()))
-            {
-                uom = "EA";
-            }
+        String uom = "CS";
+        Integer quantity = request.getCasePack();
+        Integer price = request.getCasePack() * request.getItemCost();
+        if (1 == request.getCasePack()) {
+            quantity = request.getQtyReceived();
+            uom = "EA";
+            price = request.getItemCost();
+        }
 
-            poLineResponse.setQuantity(intToStringConvertor(poLine.getQtyReceived()));//TODO cross-check  the logic
-            poLineResponse.setUom(uom);
-            poLineResponse.setPrice(String.valueOf(poLine.getItemCost()));
-            poLineResponse.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_ATTRIBUTE_CAT.name()));
-            poLineResponse.setAttribute1(poLine.getStoreId());
-            poLineResponse.setAttribute2(poLine.getSupplierInvoiceNo());
-            poLineResponse.setAttribute3(String.valueOf(poLine.getReceiptItemId()));
-            poLineResponse.setAttribute4(poLine.getUpcCode());
-            poLineResponse.setAttribute5(String.valueOf(poLine.getRetailDepartment()));
-            poLineResponse.setAttribute6(poLine.getRetailClass());
-            poLineResponse.setAttribute7(poLine.getItemSize());
-            poLineResponse.setAttribute8(poLine.getUomDescriptor());
-            poLineResponse.setAttribute9(String.valueOf(poLine.getRetailQty()));
-            poLineResponse.setAttribute10(String.valueOf(poLine.getRetailPrice()));
-            poLineResponse.setAttribute11(poLine.getMerchandisingDepartment());
-            poLineResponse.setAttribute12(poLine.getMerchandisingClass());
-            poLineResponse.setAttribute13(poLine.getMerchandisingSubClass());
-            poLineResponse.setAttribute14(poLine.getSubclassMerchandiser());
-            poLineResponse.setAttributeDate1(dateConvertor(poLine.getCreatedTs()));
-            poLineResponse.setAttributeDate2(poLine.getSupplierInvoiceDate());
-            poLineResponses.add(poLineResponse);
-            transformPoLineLocation(poLine, poLineResponse);
+        poLineResponse.setQuantity(String.valueOf(quantity));
+        poLineResponse.setUom(uom);
+        poLineResponse.setPrice(String.valueOf(price));
+        poLineResponse.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_ATTRIBUTE_CAT.name()));
+        poLineResponse.setAttribute1(request.getStoreId());
+        poLineResponse.setAttribute2(request.getStoreName());
+        poLineResponse.setAttribute3(request.getSupplierInvoiceNo()+"_"+request.getStoreId());
+        poLineResponse.setAttribute4(request.getReceiptItemId());
+        poLineResponse.setAttribute5(request.getUpcCode());
+        poLineResponse.setAttribute6(String.valueOf(request.getRetailDepartment()));
+
+        poLineResponse.setAttribute7(request.getRetailClass());
+        poLineResponse.setAttribute8(request.getItemSize());
+        poLineResponse.setAttribute9(request.getUomDescriptor());
+        poLineResponse.setAttribute10(String.valueOf(request.getRetailQty()));
+        poLineResponse.setAttribute11(String.valueOf(request.getRetailPrice()));
+        poLineResponse.setAttribute12(request.getMerchandisingDepartment());
+        poLineResponse.setAttribute13(request.getMerchandisingClass());
+        poLineResponse.setAttribute14(request.getMerchandisingSubClass());
+        poLineResponse.setAttribute15(request.getSubclassMerchandiser());
+        poLineResponse.setAttribute16(String.valueOf(request.getItemCost()));
+        poLineResponse.setAttributeDate1(dateConvertor(request.getCreatedTs()));
+        poLineResponse.setAttributeDate2(dateConvertor(request.getSupplierInvoiceDate()));
+        poLineResponses.add(poLineResponse);
+        transformPoLineLocation(request, poLineResponse,response);
 //        }
-        poHeaderResponse.setPoLineResponses(poLineResponses);
+        response.setPoLineResponses(poLineResponses);
 
     }
 
-    private void transformPoHeader(DSDPORequest poHeader, String batchId, POHeaderResponse poHeaderResponse) {
-        poHeaderResponse.setInterfaceHeaderKey(getRandomNumber());
-        poHeaderResponse.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_ACTION.name()));
-        poHeaderResponse.setBatchID(batchId);
-        poHeaderResponse.setDocumentTypeCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DOC_TYPE_CODE.name()));
-        poHeaderResponse.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_PRC_BU.name()));
-        poHeaderResponse.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQ_BU.name()));
-        poHeaderResponse.setSoldToLegalEntity(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_SOLD_TO_LEGAL_ENTITY.name()));
-        poHeaderResponse.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_BU.name()));
-        poHeaderResponse.setBuyer(referenceDataService.getLookupByCode(poHeader.getBuyer()));//TODO check logic Buyer need to map
-        poHeaderResponse.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_CURRENCY_CODE.name()));
-        poHeaderResponse.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_TO_LOC.name()));
+    private void transformPoHeader(DSDPORequest request, String batchId, POHeaderResponse response) {
+        response.setInterfaceHeaderKey(getRandomNumber());
+        response.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_ACTION.name()));
+        response.setBatchID(batchId);
+        response.setDocumentTypeCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DOC_TYPE_CODE.name()));
+        response.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_PRC_BU.name()));
+        response.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQ_BU.name()));
+        response.setSoldToLegalEntity(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_SOLD_TO_LEGAL_ENTITY.name()));
+        response.setBillToBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_BU.name()));
+        String buyerKey = request.getMerchandisingClass() + "-" + request.getMerchandisingSubClass() + "-" + request.getSubclassMerchandiser();
+        response.setBuyer(referenceDataService.getBuyer(buyerKey, LookupEnum.DSD_PO_DEF_BUYER));
+        response.setCurrencyCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_CURRENCY_CODE.name()));
+        response.setBillToLocation(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_BILL_TO_LOC.name()));
 
-        poHeaderResponse.setShipToLocation("");//TODO check logic no lookup available
-        Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(poHeader.getVendorNo());
+        response.setShipToLocation(referenceDataService.getShipToLocation(request.getStoreId(), LookupEnum.DSD_PO_DEF_SHIP_TO_LOC_CODE));
+        Optional<Supplier> supplierOpt = referenceDataService.getPOSupplierByCode(request.getVendorNo());
         if (supplierOpt.isPresent()) {
             Supplier supplier = supplierOpt.get();
-            poHeaderResponse.setSupplier(supplier.getSupplierName());
-            poHeaderResponse.setSupplierNumber(supplier.getSupplierNumber());
-            poHeaderResponse.setSupplierSite(supplier.getSupplierSiteCode());
+            response.setSupplier(supplier.getSupplierName());
+            response.setSupplierNumber(supplier.getSupplierNumber());
+            response.setSupplierSite(supplier.getSupplierSiteCode());
         }
-        String paymentTerms = getPaymentTerms(poHeader);
-        poHeaderResponse.setPaymentTerms(paymentTerms);
-        poHeaderResponse.setRequiredAcknowledgment(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQU_ACK.name()));
-        poHeaderResponse.setAttribute1(poHeader.getCreatedByUserid());
-        poHeaderResponse.setAttribute2(poHeader.getReceiptId());
-        poHeaderResponse.setAttribute3(poHeader.getStoreId());
-        poHeaderResponse.setAttributeDate1(dateConvertor(poHeader.getCreatedTs()));
-        poHeaderResponse.setAttributeDate2(poHeader.getSupplierInvoiceDate());
+        String paymentTerms = getPaymentTerms(request);
+        response.setPaymentTerms(paymentTerms);
+        response.setRequiredAcknowledgment(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQU_ACK.name()));
+        response.setAttribute1(request.getCreatedByUserid());
+        response.setAttribute2(request.getReceiptId());
+        response.setAttribute3(request.getStoreId());
+//        response.setAttributeDate1(dateConvertor(request.getCreatedTs()));
+//        response.setAttributeDate2(request.getSupplierInvoiceDate());
     }
 
     private String dateConvertor(Date value) {

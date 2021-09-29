@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sal.prompt.web.client.soap.stub.*;
 import com.sal.prompt.web.model.OpenPO;
 import com.sal.prompt.web.model.OpenPOResponse;
+import com.sal.prompt.web.model.POTypesEnum;
 import com.sal.prompt.web.model.SupplierResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,24 +63,28 @@ public class SoapClient {
     }
 
     @Cacheable("getOpenPODetails")
-    public Map<String, List<OpenPO>> getOpenPODetails() {
+    public Map<String, List<OpenPO>> getOpenDetails(POTypesEnum pType) {
         log.info("fetching open po from soap service");
-//        ArrayOfString values = new ArrayOfString();
-//        values.getItem().add(supplier);
 
-//        ParamNameValue paramNameValue = new ParamNameValue();
-//        paramNameValue.setName("p_process_name");
-//        paramNameValue.setValues(values);
 
-//        ArrayOfParamNameValue parameterNamesVales = new ArrayOfParamNameValue();
-//        parameterNamesVales.getItem().add(paramNameValue);
+        ArrayOfString values = new ArrayOfString();
+        values.getItem().add(pType.name());
+
+        ParamNameValue paramNameValue = new ParamNameValue();
+        paramNameValue.setName("P_Type");
+        paramNameValue.setValues(values);
+
+        ArrayOfParamNameValue parameterNamesVales = new ArrayOfParamNameValue();
+        parameterNamesVales.getItem().add(paramNameValue);
 
         ReportRequest itemRequest = new ReportRequest();
         itemRequest.setAttributeLocale("en-US");
         itemRequest.setAttributeTemplate("xml");
         itemRequest.setReportAbsolutePath("/Custom/Interfaces/Inbound/Enrichment Reports/SAL-BIP-205 - Get PO Details - Supply Chain/SAL-BIP-205 - Get PO Details - Supply Chain Report.xdo");
         itemRequest.setSizeOfDataChunkDownload(-1);
-//        itemRequest.setParameterNameValues(parameterNamesVales);
+        if (!POTypesEnum.AS400.equals(pType)) {
+            itemRequest.setParameterNameValues(parameterNamesVales);
+        }
 
         RunReport runReport = new RunReport();
         runReport.setReportRequest(itemRequest);

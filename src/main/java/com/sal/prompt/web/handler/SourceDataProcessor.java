@@ -6,6 +6,7 @@ import com.sal.prompt.web.service.FBDIFormatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,19 +20,16 @@ public abstract class SourceDataProcessor {
 
     abstract String getSourceSystem();
     abstract String getTargetSystem();
-    abstract String getBatchId();
 
-    private String getRandomNumber() {
-        return String.valueOf(System.currentTimeMillis());
-    }
 
-    public boolean process(List<? extends SourceSystemRequest> request) {
+    public boolean process(List<? extends SourceSystemRequest> request,String batchId) {
         AtomicReference<Boolean> hasError = new AtomicReference<>(false);
-        String batchId = getBatchId();
+        List<SourceSystemRequest> failedRecords = new ArrayList<>();
         List<TargetSystemResponse> transformedData = request.stream().map(data -> {
             try {
                 return transform(data,batchId);
             } catch (Exception e) {
+                failedRecords.add(data);
                 e.printStackTrace();
             }
             return null;

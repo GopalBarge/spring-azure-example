@@ -11,61 +11,64 @@ import java.util.Date;
 @Data
 public class PoLines {
     @NotEmpty
-    @JsonProperty("PO_NBR")
+    //@JsonProperty("PO_NBR")
     private String poNbr;
     @NotEmpty
-    @JsonProperty("ITEM_FACILITY")
+    //@JsonProperty("ITEM_FACILITY")
     private String itemFacility;
     @NotEmpty
-    @JsonProperty("ITEM_NBR")
+    //@JsonProperty("ITEM_NBR")
     private String itemNbr;
     @NotEmpty
-    @JsonProperty("ITEM_PACK")
-    private String itemPack;
+    //@JsonProperty("ITEM_PACK")
+    private Integer itemPack;
     @NotEmpty
-    @JsonProperty("ITEM_SIZE")
+    //@JsonProperty("ITEM_SIZE")
     private String itemSize;
     @NotEmpty
-    @JsonProperty("ITEM_DESC")
+    //@JsonProperty("ITEM_DESC")
     private String itemDesc;
     @NotEmpty
-    @JsonProperty("ON_ORDER")
+    //@JsonProperty("ON_ORDER")
     private Integer onOrder;
     @NotEmpty
-    @JsonProperty("LIST_COST")
+    //@JsonProperty("LIST_COST")
     private Integer listCost;
     @NotEmpty
-    @JsonProperty("WEIGHT")
+    //@JsonProperty("WEIGHT")
     private Integer weight;
     @NotEmpty
-    @JsonProperty("ITEM_CUBE")
+    //@JsonProperty("ITEM_CUBE")
     private String itemCube;
     @NotEmpty
-    @JsonProperty("PALLET_QUANTITY")
+    //@JsonProperty("PALLET_QUANTITY")
     private Integer palletQuantity;
     @NotEmpty
-    @JsonProperty("LAST_COST")
+    //@JsonProperty("LAST_COST")
     private Integer lastCost;
     @NotEmpty
-    @JsonProperty("ITEM_DEPT")
+    //@JsonProperty("ITEM_DEPT")
     private String itemDept;
     @NotEmpty
-    @JsonProperty("AMT_FREIGHT_BILL")
+    //@JsonProperty("AMT_FREIGHT_BILL")
     private String amtFreightBill;
     @NotEmpty
-    @JsonProperty("AMT_BACKHAUL")
+    //@JsonProperty("AMT_BACKHAUL")
     private String amtBackhaul;
     @NotEmpty
-    @JsonProperty("CASE_UPC")
+    //@JsonProperty("CASE_UPC")
     private String caseUpc;
     @NotEmpty
-    @JsonProperty("UPC_FORMAT_CD")
+    //@JsonProperty("UPC_FORMAT_CD")
     private String upcFormatCd;
     @NotEmpty
-    @JsonProperty("WHSE_NO")
+    //@JsonProperty("WHSE_NO")
     private Integer whseNo;
     @NotEmpty
-    @JsonProperty("DUE_DATE")
+    //@JsonProperty("AMOUNT_OFF_INVOICE")
+    private Integer amountOffInvoice;
+    @NotEmpty
+    //@JsonProperty("DUE_DATE")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.INPUT_DATE_FORMATE)
     private Date dueDate;
 }
