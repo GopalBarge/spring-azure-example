@@ -83,7 +83,7 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
         PODistributionResponse poDistributionResponse = new PODistributionResponse();
         poDistributionResponse.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
         poDistributionResponse.setInterfaceDistributionKey(getRandomNumber());
-        poDistributionResponse.setDistribution(poLineLocationResponse.getSchedule());//TODO check again Use same Line number# which you referred while creating Line csv file
+        poDistributionResponse.setDistribution(poLineLocationResponse.getSchedule());
         poDistributionResponse.setRequester(headerResponse.getBuyer());
 
         poDistributionResponse.setQuantity(poLineLocationResponse.getQuantity());
@@ -105,11 +105,11 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
         POLineLocationResponse poLineLocationResponse = new POLineLocationResponse();
         poLineLocationResponse.setInterfaceLineKey(lineResponse.getInterfaceLineKey());
         poLineLocationResponse.setInterfaceLineLocationKey(getRandomNumber());
-        poLineLocationResponse.setSchedule(lineResponse.getLine()); //TODO check again Use same Line number# which you referred while creating Line csv file
+        poLineLocationResponse.setSchedule(lineResponse.getLine());
         poLineLocationResponse.setShipToLocation(referenceDataService.getShipToLocation(String.valueOf(lineRequest.getWhseNo()), LookupEnum.SC_PO_DEF_SHIP_TO_LOC_CODE));
         poLineLocationResponse.setShipToOrganization(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_LOC_SHIP_TO_ORG.name()));
 
-        poLineLocationResponse.setQuantity(lineResponse.getQuantity());//TODO check logic
+        poLineLocationResponse.setQuantity(lineResponse.getQuantity());
         poLineLocationResponse.setNeedByDate(getNeedByDate(lineRequest.getDueDate()));
         poLineLocationResponse.setDestinationTypeCode(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_LOC_DEST_TYPE_CODE.name()));
         poLineLocationResponse.setAccrueAtReceipt(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_LOC_ACCR_AT_RECPT.name()));
@@ -160,7 +160,7 @@ public class SupplyChainPOProcessor extends SourceDataProcessor {
             poLineResponse.setQuantity(String.valueOf(quantity));
             poLineResponse.setUom(uom);
 
-            poLineResponse.setPrice(doubleToString(price)); //TODO check point 3
+            poLineResponse.setPrice(doubleToString(price));
             poLineResponse.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.SC_PO_LINE_ATTRIBUTE_CAT.name()));
             poLineResponse.setAttribute1(poLine.getItemFacility());
             poLineResponse.setAttribute2(poLine.getItemNbr());

@@ -86,7 +86,8 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             ReceiptLineResponse poLineResponse = new ReceiptLineResponse();
             poLineResponse.setInterfaceLineNumber(String.valueOf(lineNum));
             poLineResponse.setTransactionType(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_TXN_TYPE.name()));
-            poLineResponse.setAutoTransactCode(dateToString(poLine.getRcvDate()));//TODO check logic no Lookup present
+            poLineResponse.setAutoTransactCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_TXN_CODE.name()));
+            poLineResponse.setTransactionDate(getDate());
             poLineResponse.setSourceDocumentCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_SOURCE_DOC_CODE.name()));
             poLineResponse.setReceiptSourceCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_SOURCE_CODE.name()));
             poLineResponse.setHeaderInterfaceNumber(response.getHeaderInterfaceNumber());
@@ -149,7 +150,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             }
 
             response.setEmployeeName(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_EMP_NAME.name()));
-            response.setTransactionDate(getDate());//TODO heck again if sysdate logic is correct
+            response.setTransactionDate(getDate());
             response.setBusinessUnit(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_BU.name()));
             response.setAttributeCategory(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_ATTRIBUTE_CAT.name()));
             response.setAttribute1(request.getPoNbr());
