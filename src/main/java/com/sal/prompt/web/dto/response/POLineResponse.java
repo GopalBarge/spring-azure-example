@@ -5,6 +5,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
 
 import java.util.List;
+
 @Data
 public class POLineResponse {
     List<POLineLocationResponse> poLineLocationResponses;
@@ -417,4 +418,6 @@ public class POLineResponse {
     @CsvBindByPosition(position = 101)
     @JsonProperty("Maximum Retainage Amount")
     private String maximumRetainageAmount;
+
+    boolean isUpdate;
 }

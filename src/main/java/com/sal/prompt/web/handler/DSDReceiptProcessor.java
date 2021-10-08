@@ -13,6 +13,7 @@ import com.sal.prompt.web.model.Supplier;
 import com.sal.prompt.web.service.FBDIFormatService;
 import com.sal.prompt.web.service.ReferenceDataService;
 import com.sal.prompt.web.utils.CommonUtility;
+import com.sal.prompt.web.utils.InterfaceEnum;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class DSDReceiptProcessor extends SourceDataProcessor {
 
     @Override
     String getSourceSystem() {
-        return "DSD";
+        return InterfaceEnum.DSD_RECEIPT.name();
     }
 
     @Override

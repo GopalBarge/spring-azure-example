@@ -29,6 +29,8 @@ public class OpenPO {
     public String unitPrice;
     @JsonProperty("UOM_CODE")
     public String uomCode;
+    @JsonProperty("PO_HEADER_ID")
+    public String poHeaderId;
 /*
 {
    "DOCUMENT_NUMBER": "SAL503932",

@@ -35,7 +35,7 @@ public abstract class SourceDataProcessor {
             return null;
         }).collect(Collectors.toList());
         Map<String, List> dataToWrite =  getFileDataMap(transformedData);
-        String zipFileName = String.format("%s_%s_%s.zip",getSourceSystem(), getTargetSystem(),batchId);
+        String zipFileName = String.format("%s_%s.zip",getSourceSystem(), getTargetSystem(),batchId);
         boolean isUploaded = fbdiFormatService.prepareFBDIFiles(dataToWrite, zipFileName);
 
         if (!isUploaded) {

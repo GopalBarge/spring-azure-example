@@ -414,4 +414,6 @@ public class POHeaderResponse implements TargetSystemResponse{
     @CsvBindByPosition(position = 100)
     @JsonProperty("Master Contract Type")
     private String masterContractType;
+
+    boolean isUpdate;
 }

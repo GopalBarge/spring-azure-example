@@ -1,7 +1,8 @@
 package com.sal.prompt.web.model;
 
 public enum POTypesEnum {
-    AS400,
+    AS400_PO,
+    AS400_RECPT,
     DSD_RECPT,
     HANDHELD;
 }

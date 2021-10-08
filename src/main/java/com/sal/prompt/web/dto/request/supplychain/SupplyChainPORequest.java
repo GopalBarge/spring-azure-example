@@ -89,6 +89,7 @@ public class SupplyChainPORequest implements SourceSystemRequest {
     @NotEmpty
     //@JsonProperty("MASTER_NUMBER")
     private String masterNumber;
+    private String dataColumn; //Change Order Description
 
     @NotEmpty
     //@JsonProperty("PO_LINES")

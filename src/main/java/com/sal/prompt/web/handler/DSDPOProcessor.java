@@ -7,6 +7,7 @@ import com.sal.prompt.web.model.LookupEnum;
 import com.sal.prompt.web.model.Supplier;
 import com.sal.prompt.web.service.FBDIFormatService;
 import com.sal.prompt.web.service.ReferenceDataService;
+import com.sal.prompt.web.utils.InterfaceEnum;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotEmpty;
@@ -36,7 +37,7 @@ public class DSDPOProcessor extends SourceDataProcessor {
 
     @Override
     String getSourceSystem() {
-        return "DSD";
+        return InterfaceEnum.DSD_PO.name();
     }
 
     @Override
@@ -82,7 +83,7 @@ public class DSDPOProcessor extends SourceDataProcessor {
         PODistributionResponse poDistributionResponse = new PODistributionResponse();
         poDistributionResponse.setInterfaceLineLocationKey(poLineLocationResponse.getInterfaceLineLocationKey());
         poDistributionResponse.setInterfaceDistributionKey(getRandomNumber());
-        poDistributionResponse.setDistribution(poLineLocationResponse.getSchedule());//Use same Line number# which you referred while creating Line csv file
+        poDistributionResponse.setDistribution("1");//Use same Line number# which you referred while creating Line csv file
         poDistributionResponse.setRequester(response.getBuyer());
 
         poDistributionResponse.setQuantity(poLineLocationResponse.getQuantity());
@@ -104,7 +105,7 @@ public class DSDPOProcessor extends SourceDataProcessor {
         POLineLocationResponse poLineLocationResponse = new POLineLocationResponse();
         poLineLocationResponse.setInterfaceLineKey(lineResponse.getInterfaceLineKey());
         poLineLocationResponse.setInterfaceLineLocationKey(getRandomNumber());
-        poLineLocationResponse.setSchedule(lineResponse.getLine()); //Use same Line number# which you referred while creating Line csv file
+        poLineLocationResponse.setSchedule("1"); //Use same Line number# which you referred while creating Line csv file
         String shipToLocation = referenceDataService.getShipToLocation(lineRequest.getStoreId(), LookupEnum.DSD_PO_DEF_SHIP_TO_LOC_CODE);
         poLineLocationResponse.setShipToLocation(shipToLocation);
         poLineLocationResponse.setShipToOrganization(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_LINE_LOC_SHIP_TO_ORG.name()));
@@ -183,6 +184,8 @@ public class DSDPOProcessor extends SourceDataProcessor {
         response.setInterfaceHeaderKey(getRandomNumber());
         response.setAction(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_ACTION.name()));
         response.setBatchID(batchId);
+        response.setImportSource(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_IMPORT_SOURCE.name()));
+        //TODO add minsing field check mapping sheet
         response.setDocumentTypeCode(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_DOC_TYPE_CODE.name()));
         response.setProcurementBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_PRC_BU.name()));
         response.setRequisitioningBU(referenceDataService.getLookupByCode(LookupEnum.DSD_PO_REQ_BU.name()));

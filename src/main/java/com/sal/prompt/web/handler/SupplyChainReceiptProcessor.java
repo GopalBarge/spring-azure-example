@@ -1,10 +1,6 @@
 package com.sal.prompt.web.handler;
 
 import com.sal.prompt.web.dto.request.SourceSystemRequest;
-import com.sal.prompt.web.dto.request.dsd.DSDReceipt;
-import com.sal.prompt.web.dto.request.dsd.DSDReceiptRequest;
-import com.sal.prompt.web.dto.request.supplychain.PoLines;
-import com.sal.prompt.web.dto.request.supplychain.SupplyChainPORequest;
 import com.sal.prompt.web.dto.request.supplychain.SupplyChainReceiptRequest;
 import com.sal.prompt.web.dto.request.supplychain.SupplychainReceipt;
 import com.sal.prompt.web.dto.response.*;
@@ -12,14 +8,12 @@ import com.sal.prompt.web.model.LookupEnum;
 import com.sal.prompt.web.model.OpenPO;
 import com.sal.prompt.web.model.POTypesEnum;
 import com.sal.prompt.web.model.Supplier;
-import com.sal.prompt.web.model.lookup.SupplyChainPOLineLookupEnum;
-import com.sal.prompt.web.model.lookup.SupplyChainPOLookupEnum;
 import com.sal.prompt.web.service.FBDIFormatService;
 import com.sal.prompt.web.service.ReferenceDataService;
 import com.sal.prompt.web.utils.CommonUtility;
+import com.sal.prompt.web.utils.InterfaceEnum;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,7 +37,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
 
     @Override
     String getSourceSystem() {
-        return "Receipt";
+        return InterfaceEnum.AS400_RECEIPT.name();
     }
 
     @Override
@@ -92,7 +86,7 @@ public class SupplyChainReceiptProcessor extends SourceDataProcessor {
             poLineResponse.setReceiptSourceCode(referenceDataService.getLookupByCode(LookupEnum.SC_RCPT_LINE_SOURCE_CODE.name()));
             poLineResponse.setHeaderInterfaceNumber(response.getHeaderInterfaceNumber());
             poLineResponse.setItemDescription(poLine.getItemDesc());
-            List<OpenPO> openPos = referenceDataService.getOpenPos(poLine.getPoNbr(), POTypesEnum.AS400); //TODO check p_type for AS400 receipt
+            List<OpenPO> openPos = referenceDataService.getOpenPos(poLine.getPoNbr(), POTypesEnum.AS400_PO); //TODO check p_type for AS400 receipt
             Optional<String> documentNumber = openPos.stream().filter(po ->
                     po.getVendorNbr().equalsIgnoreCase(poLine.getVendorNbr())
                     && po.getItemFacility().equalsIgnoreCase(poLine.getItemFacility())).map(po -> po.getDocumentNumber()).findFirst();
